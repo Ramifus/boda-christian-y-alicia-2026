@@ -1,0 +1,167 @@
+---
+// src/components/Versiculo.astro
+// Mancha de acuarela verde sobre el papel blanco, con la frase en blanco
+// escrita encima, en Freestyle Script.
+//
+// La mancha es la que mandó el cliente (macha.png). Acá va la versión
+// comprimida y recortada, mancha-verde.webp, y se sirve al 60% de opaca:
+// en crudo el verde tapaba demasiado y el diseño la pide como una aguada.
+// Ese 60% es el número a tocar si la quieren más clara o más cargada, y
+// está escrito en dos lados —el CSS y la animación de entrada—, los dos
+// tienen que decir lo mismo.
+//
+// La mancha va ancha, casi de borde a borde de la columna (94%), para
+// que la frase entre grande: es lo que la hace ver horizontal.
+//
+// Los dos renglones van separados a propósito, uno por dato, y no como
+// una sola frase que el navegador parta solo. Es que no puede partirla
+// donde va: el segundo renglón es más largo que el primero (11,5 contra
+// 8,7 anchos de letra), así que cualquier ancho que deje entrar al
+// segundo entero, deja entrar también la primera palabra del segundo al
+// final del primero, y el corte se va de lugar. Partida a mano queda
+// como el diseño y además cada renglón se edita suelto.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const versiculo1 = "Cuando el destino une a dos almas,";
+const versiculo2 = "ni el tiempo, ni la distancia pueden separarlos";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="versiculo" class="seccion">
+    <div id="mancha-versiculo" class="caja">
+        <img
+            src="/imagenes/mancha-verde.webp"
+            alt=""
+            width="880"
+            height="454"
+            aria-hidden="true"
+            class="mancha"
+        />
+
+        <p class="texto font-freestyle">
+            <span>{versiculo1}</span>
+            <span>{versiculo2}</span>
+        </p>
+    </div>
+</section>
+
+<style>
+    /*
+       Arriba casi sin aire: la mancha tiene que quedar pegada a la
+       sección de los nombres. El resto del respiro lo pone el propio
+       borde desflecado de la acuarela, que ya entra difuminado.
+    */
+    .seccion {
+        position: relative;
+        width: 100%;
+        padding: 1% 0 6%;
+    }
+
+    /*
+       La caja mide lo que la mancha. container-type deja que la frase se
+       mida contra ella y no contra la pantalla: así el texto siempre cae
+       dentro del verde, sea cual sea el celular.
+    */
+    .caja {
+        position: relative;
+        width: 94%;
+        margin: 0 auto;
+        container-type: inline-size;
+    }
+
+    /*
+       Al 60% el verde queda como aguada y no como color plano. No
+       conviene bajarlo mucho más: el texto blanco empieza a perderse
+       contra el papel.
+    */
+    .mancha {
+        display: block;
+        width: 100%;
+        height: auto;
+        opacity: 0.6;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /*
+       La frase va centrada sobre la mancha, en dos renglones.
+
+       El tamaño sale de medir la Freestyle Script: a 7.5cqw el renglón
+       largo ocupa 86cqw de los 92 que tiene de lugar, o sea que entra
+       entero con un poco de aire. Si se agranda más, se parte solo en
+       tres renglones.
+    */
+    .texto {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        max-width: 92cqw;
+        color: #ffffff;
+        text-align: center;
+        font-size: 7.5cqw;
+        line-height: 1.25;
+    }
+
+    .texto span {
+        display: block;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const caja = document.getElementById("mancha-versiculo");
+        if (!caja) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        const mancha = caja.querySelector(".mancha");
+        const texto = caja.querySelector(".texto");
+
+        const disparador = {
+            trigger: caja,
+            start: "top 85%",
+            toggleActions: "play none none reset",
+        };
+
+        // La mancha se abre como si la pintaran: entra creciendo apenas,
+        // no apareciendo de golpe.
+        //
+        // Termina en 0.6 y no en 1: esa es la opacidad con la que vive la
+        // aguada. Si acá se pone 1, la animación le pisa el CSS y la
+        // mancha se oscurece apenas entra en pantalla.
+        gsap.fromTo(
+            mancha,
+            { opacity: 0, scale: 0.94 },
+            {
+                opacity: 0.6,
+                scale: 1,
+                duration: 1.4,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+
+        gsap.fromTo(
+            texto,
+            { opacity: 0, y: 14 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.45,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+    });
+</script>

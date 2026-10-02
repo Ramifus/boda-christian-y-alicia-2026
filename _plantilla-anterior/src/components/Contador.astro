@@ -1,0 +1,305 @@
+---
+// src/components/Contador.astro
+// "Falta Para Nuestra Boda" entre dos filigranas doradas, y en el medio
+// la cuenta regresiva en cuatro arcos verdes con el número en blanco.
+//
+// ── De dónde salen las medidas ────────────────────────────────
+// Se midió el diseño y se cruzó con los anchos reales de las fuentes de
+// /fonts. Salen dos tipografías:
+//
+//   título     Verandah Reverie — la misma del "Acompananos"
+//   rótulos    Tangerine Regular — los cuatro dan 5.98 · 5.97 · 6.06 ·
+//              5.96, o sea la misma letra
+//   números    Adelia — el diseño los tiene en Tangerine, pero esa letra
+//              trae cifras antiguas y no sirve para un contador. El
+//              porqué está anotado en .numero.
+//
+// Medidas, en % del ancho de la columna:
+//   arco        13.2% de ancho, con 5% de aire entre uno y otro
+//   filigranas  45.8% la de arriba, 44.8% la de abajo
+//
+// Las filigranas van derechas, sin voltear: comparadas con el archivo,
+// en este diseño miran para el mismo lado que el original (al revés de
+// las de NombresPadres, que sí van dadas vuelta).
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "Falta Para Nuestra Boda";
+// La boda: 24 de octubre de 2026, 14:00
+const fechaBoda = "2026-10-24T14:00:00";
+
+const casillas = [
+    { id: "dias", rotulo: "Días" },
+    { id: "horas", rotulo: "Horas" },
+    { id: "minutos", rotulo: "Minutos" },
+    { id: "segundos", rotulo: "Segundos" },
+];
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="contador-boda" class="seccion">
+    <p class="titulo font-verandah">{titulo}</p>
+
+    <img
+        src="/imagenes/separador-arriba.webp"
+        alt=""
+        width="760"
+        height="166"
+        aria-hidden="true"
+        class="filigrana filigrana-arriba"
+    />
+
+    <div id="contador" class="casillas" data-fecha={fechaBoda}>
+        {
+            casillas.map((casilla) => (
+                <div class="casilla">
+                    <div class="arco">
+                        <span
+                            data-campo={casilla.id}
+                            class="numero font-adelia"
+                        >
+                            00
+                        </span>
+                    </div>
+                    <p class="rotulo font-tangerine">{casilla.rotulo}</p>
+                </div>
+            ))
+        }
+    </div>
+
+    <img
+        src="/imagenes/separador-abajo.webp"
+        alt=""
+        width="760"
+        height="163"
+        aria-hidden="true"
+        class="filigrana filigrana-abajo"
+    />
+</section>
+
+<style>
+    /*
+       container-type deja medir todo contra el ancho de la columna y no
+       contra la pantalla: 1cqw es el 1% de ese ancho, y el armado guarda
+       la misma proporción en cualquier celular.
+    */
+    .seccion {
+        container-type: inline-size;
+        position: relative;
+        width: 100%;
+        padding: 8% 0;
+        text-align: center;
+    }
+
+    .titulo {
+        margin: 0;
+        color: #075843;
+        font-size: 9cqw;
+        line-height: 1;
+    }
+
+    .filigrana {
+        display: block;
+        height: auto;
+        margin: 0 auto;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /* Las dos filigranas no son gemelas: cada una trae su propio ancho */
+    .filigrana-arriba {
+        width: 45.8%;
+        margin-top: 10cqw;
+    }
+
+    .filigrana-abajo {
+        width: 44.8%;
+        margin-top: 5.6cqw;
+    }
+
+    /* ── Los cuatro arcos ───────────────────────────────────── */
+    .casillas {
+        display: flex;
+        justify-content: center;
+        gap: 5%;
+        margin-top: 7cqw;
+    }
+
+    /*
+       El min-width 0 es imprescindible. Un ítem flex trae min-width auto,
+       o sea que no se deja achicar por debajo de su contenido: "Minutos"
+       es más ancho que su arco, así que ensanchaba su casilla, el arco
+       crecía con ella —va por proporción, no por alto fijo— y el rótulo
+       terminaba más abajo y más grande que los otros tres.
+    */
+    .casilla {
+        flex: 0 0 13.2%;
+        min-width: 0;
+    }
+
+    /*
+       El arco: 55 de ancho por 70 de alto en el diseño, con la cúpula
+       redonda arriba y las puntas de abajo apenas matadas. El radio va
+       en dos ejes (50% de ancho por 30% de alto) porque la cúpula no es
+       media circunferencia: es más chata.
+    */
+    .arco {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        aspect-ratio: 55 / 70;
+        /*
+           El número no va en el centro del arco sino en el centro de la
+           parte recta: la cúpula se come el aire de arriba y, centrado a
+           secas, el número se ve subido.
+
+           El valor está calculado contra la Adelia, cuyos dígitos no
+           quedan en el medio de su propia caja: el dibujo cae 0,11 em
+           por encima del centro. Si se cambia la fuente del número, hay
+           que rehacer este número.
+        */
+        padding-top: 3.7cqw;
+        border-radius: 50% 50% 3px 3px / 30% 30% 3px 3px;
+        background-image: linear-gradient(#075843, #075843);
+    }
+
+    /*
+       Los números van en Adelia y no en la Tangerine de los rótulos,
+       aunque el diseño use la misma letra para las dos cosas.
+
+       El motivo: la Tangerine trae cifras antiguas. Sus dígitos miden
+       entre 0,313 y 0,510 em de alto —un 63% de diferencia— y algunos
+       cuelgan hasta 0,162 em por debajo de la línea. O sea que un 02 se
+       ve chiquito y arriba, y un 44 grande, y encima cambian de tamaño
+       solos cada segundo. No se arregla desde el CSS: los dibujos de los
+       glifos son distintos, y la fuente no trae cifras alternativas.
+
+       La Adelia las tiene parejas: las diez miden entre 1,421 y 1,454 em
+       de alto y todas apoyan igual, así que el número no cambia de porte
+       al pasar los segundos.
+
+       El 4.68cqw no es al azar: con dígitos de 1,43 em, es el tamaño que
+       deja el número del mismo alto que en el diseño (6,7% del ancho de
+       la columna).
+    */
+    .numero {
+        color: #ffffff;
+        font-size: 4.68cqw;
+        line-height: 1;
+    }
+
+    .rotulo {
+        margin: 2.4cqw 0 0;
+        color: #248358;
+        font-size: 5.98cqw;
+        line-height: 1;
+        /*
+           "Minutos" es más ancho que su arco y tiene que seguir en un
+           solo renglón: se sale para los costados, hacia el aire que hay
+           entre arco y arco, como en el diseño.
+        */
+        white-space: nowrap;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const caja = document.getElementById("contador");
+        const seccion = document.getElementById("contador-boda");
+        if (!caja || !seccion) return;
+
+        // ── La cuenta ───────────────────────────────────────────
+        const destino = new Date(caja.dataset.fecha ?? "").getTime();
+        const campo = (n: string) =>
+            caja.querySelector<HTMLElement>(`[data-campo="${n}"]`);
+        const dias = campo("dias");
+        const horas = campo("horas");
+        const minutos = campo("minutos");
+        const segundos = campo("segundos");
+
+        const dosDigitos = (n: number) => n.toString().padStart(2, "0");
+
+        const refrescar = () => {
+            const falta = destino - Date.now();
+
+            if (!isFinite(destino)) return;
+
+            // Ya pasó la fecha: todo en cero, y no hace falta seguir
+            if (falta <= 0) {
+                if (dias) dias.textContent = "00";
+                if (horas) horas.textContent = "00";
+                if (minutos) minutos.textContent = "00";
+                if (segundos) segundos.textContent = "00";
+                clearInterval(reloj);
+                return;
+            }
+
+            const s = Math.floor(falta / 1000);
+            if (dias) dias.textContent = dosDigitos(Math.floor(s / 86400));
+            if (horas) horas.textContent = dosDigitos(Math.floor(s / 3600) % 24);
+            if (minutos)
+                minutos.textContent = dosDigitos(Math.floor(s / 60) % 60);
+            if (segundos) segundos.textContent = dosDigitos(s % 60);
+        };
+
+        refrescar();
+        const reloj = setInterval(refrescar, 1000);
+
+        // ── Entrada ─────────────────────────────────────────────
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        const disparador = {
+            trigger: seccion,
+            start: "top 82%",
+            toggleActions: "play none none reset",
+        };
+
+        gsap.fromTo(
+            seccion.querySelector(".titulo"),
+            { opacity: 0, y: 16 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+
+        // Las filigranas se abren desde el centro
+        gsap.fromTo(
+            seccion.querySelectorAll(".filigrana"),
+            { opacity: 0, scaleX: 0.72 },
+            {
+                opacity: 1,
+                scaleX: 1,
+                duration: 1.1,
+                delay: 0.3,
+                stagger: 0.15,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+
+        // Y los arcos suben uno tras otro
+        gsap.fromTo(
+            seccion.querySelectorAll(".casilla"),
+            { opacity: 0, y: 20 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: 0.45,
+                stagger: 0.12,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+    });
+</script>

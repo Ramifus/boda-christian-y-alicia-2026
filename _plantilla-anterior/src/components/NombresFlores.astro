@@ -1,0 +1,332 @@
+---
+// src/components/NombresFlores.astro
+// Primera sección después de la portada: la foto de los novios a sangre,
+// cortada abajo como papel rasgado, y debajo —sobre el papel blanco— el
+// anuncio, los nombres y la fecha.
+//
+// El rasgado es el mismo trazo de Foto1.astro, pero solo el de abajo y
+// aplastado a una banda del 2% del alto: acá la foto es vertical y con la
+// profundidad original el mordisco se comería media pantalla.
+//
+// La marca de agua es el monograma recortado del logo de la portada
+// (monograma.webp): las mismas iniciales, sin las filigranas.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const foto = "/imagenes/foto1.webp";
+const alt = "Ayato y Fabiola juntos, de noche, con la ciudad detrás";
+const anuncio = "¡Nos casamos !";
+const novio = "Ayato";
+const novia = "Fabiola";
+const fecha = "24-10-2026";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="sobre-novios" class="seccion">
+    <!-- La foto, a sangre y rasgada abajo -->
+    <div id="nf-foto-caja" class="foto-caja">
+        <img
+            id="nf-foto"
+            src={foto}
+            alt={alt}
+            width="772"
+            height="1208"
+            class="foto"
+        />
+
+        <!-- Marca de agua: las iniciales, arriba a la derecha -->
+        <img
+            id="nf-marca"
+            src="/imagenes/monograma.webp"
+            alt=""
+            aria-hidden="true"
+            class="marca"
+        />
+    </div>
+
+    <!-- El anuncio, sobre el papel blanco -->
+    <div id="nf-texto" class="texto">
+        <p class="anuncio font-tempting">{anuncio}</p>
+        <p class="nombres font-tempting">{novio} &amp; {novia}</p>
+        <p class="fecha font-tempting">{fecha}</p>
+    </div>
+</section>
+
+<style>
+    /*
+       Sección a sangre: la foto llega a los dos bordes de la columna, así
+       que acá no va padding lateral.
+
+       El blanco va declarado como degradado y no como color: el modo
+       oscuro forzado oscurece colores pero respeta las imágenes.
+    */
+    .seccion {
+        position: relative;
+        width: 100%;
+        /* El aire de abajo es poco a propósito: la sección que sigue
+           tiene que quedar cerca, no descolgada */
+        padding: 0 0 5%;
+        background-image: linear-gradient(#ffffff, #ffffff);
+    }
+
+    /*
+       El rasgado va en la caja y no en la foto: así la marca de agua
+       queda por dentro del recorte y el zoom de entrada no asoma por el
+       borde.
+
+       El trazo sale del de Foto1.astro —el de abajo— remapeado a una
+       banda del 2,1% del alto.
+    */
+    .foto-caja {
+        position: relative;
+        width: 100%;
+        /* Vertical, pero no tanto como la foto original: recorta el piso
+           y deja a los novios enteros */
+        aspect-ratio: 7 / 10;
+        overflow: hidden;
+        background-image: linear-gradient(#1a1a1a, #1a1a1a);
+        clip-path: polygon(
+            0% 0%,
+            100% 0%,
+            100.00% 98.65%,
+            98.18% 98.83%,
+            96.36% 98.56%,
+            94.55% 99.12%,
+            92.73% 98.61%,
+            90.91% 98.39%,
+            89.09% 99.05%,
+            87.27% 99.51%,
+            85.45% 99.27%,
+            83.64% 99.06%,
+            81.82% 99.20%,
+            80.00% 99.19%,
+            78.18% 98.72%,
+            76.36% 98.65%,
+            74.55% 98.34%,
+            72.73% 99.03%,
+            70.91% 99.35%,
+            69.09% 99.41%,
+            67.27% 99.70%,
+            65.45% 100.00%,
+            63.64% 99.58%,
+            61.82% 99.55%,
+            60.00% 99.09%,
+            58.18% 98.85%,
+            56.36% 98.78%,
+            54.55% 98.73%,
+            52.73% 98.45%,
+            50.91% 98.78%,
+            49.09% 98.80%,
+            47.27% 99.05%,
+            45.45% 98.50%,
+            43.64% 98.43%,
+            41.82% 98.57%,
+            40.00% 99.00%,
+            38.18% 98.73%,
+            36.36% 99.24%,
+            34.55% 99.48%,
+            32.73% 99.67%,
+            30.91% 99.57%,
+            29.09% 99.16%,
+            27.27% 98.64%,
+            25.45% 98.28%,
+            23.64% 99.00%,
+            21.82% 98.46%,
+            20.00% 98.43%,
+            18.18% 98.44%,
+            16.36% 98.56%,
+            14.55% 98.85%,
+            12.73% 98.67%,
+            10.91% 98.51%,
+            9.09% 98.56%,
+            7.27% 98.42%,
+            5.45% 99.02%,
+            3.64% 99.08%,
+            1.82% 99.04%,
+            0.00% 97.90%
+        );
+    }
+
+    .foto {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Un poco arriba del centro: así se ven las caras y no el piso */
+        object-position: center 38%;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /* ── Marca de agua ──────────────────────────────────────── */
+    .marca {
+        position: absolute;
+        top: 3.5%;
+        right: 5%;
+        width: 26%;
+        height: auto;
+        opacity: 0.4;
+        /* screen sobre la foto oscura: las iniciales quedan como un
+           reflejo claro y no como una calcomanía pegada encima */
+        mix-blend-mode: screen;
+        filter: brightness(1.45);
+        pointer-events: none;
+        user-select: none;
+    }
+
+    /* ── El anuncio ─────────────────────────────────────────── */
+    /*
+       container-type deja medir los tres renglones contra el ancho de la
+       columna y no del viewport: la escritura guarda la misma proporción
+       en cualquier celular.
+    */
+    /*
+       Sin padding lateral a propósito: así 1cqw es exactamente el 1% del
+       ancho de la columna y las medidas de abajo se leen como lo que son.
+    */
+    .texto {
+        container-type: inline-size;
+        text-align: center;
+    }
+
+    /*
+       ── Las medidas de los tres renglones ────────────────────────
+       No son a ojo: salen de medir el diseño y de los anchos reales de
+       la Tempting, y están pensadas como % del ancho de la columna.
+
+           ¡Nos casamos !     ocupa el 46,5% del ancho
+           Ayato & Fabiola    ocupa el 72,5%
+           24-10-2026         ocupa el 30,7%
+
+       La Tempting dibuja las mayúsculas a 1,14 em (media vez más grandes
+       que la Elegant al mismo font-size) y la letra se sale de su propia
+       caja: por eso los márgenes son grandes y el line-height es 1. Si
+       se cambia la tipografía de estos renglones hay que rehacer las
+       tres medidas, no alcanza con tocar una.
+    */
+    .anuncio {
+        /* El diseño daba 5.8cqw desde el rasgado de la foto; se separó
+           un poco más a pedido */
+        margin-top: 9.5cqw;
+        color: #075846;
+        font-size: 6.4cqw;
+        line-height: 1;
+    }
+
+    /*
+       Sin mayúsculas forzadas ni espaciado entre letras: esta cursiva no
+       los tolera.
+
+       Los nombres van en un solo renglón, como en el diseño. El tamaño
+       está calculado para que "Ayato & Fabiola" entre con aire de sobra,
+       así que el nowrap no llega a empujar nada fuera de la columna.
+    */
+    .nombres {
+        margin-top: 12.4cqw;
+        white-space: nowrap;
+        color: #d1b270;
+        font-size: 8.4cqw;
+        line-height: 1;
+    }
+
+    .fecha {
+        /* 4,4cqw era la medida del diseño; se bajó un poco más */
+        margin-top: 6.5cqw;
+        color: #2d4c48;
+        font-size: 5.75cqw;
+        line-height: 1;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const caja = document.getElementById("nf-foto-caja");
+        const foto = document.getElementById("nf-foto");
+        const marca = document.getElementById("nf-marca");
+        const texto = document.getElementById("nf-texto");
+        if (!caja || !foto || !texto) return;
+
+        // Sin animación si el visitante pidió menos movimiento: la
+        // sección ya está armada y visible en el HTML.
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        const renglones = Array.from(texto.children);
+
+        gsap.set(caja, { opacity: 0 });
+        gsap.set(foto, { scale: 1.16 });
+        gsap.set(marca, { opacity: 0, y: -10 });
+        gsap.set(renglones, { opacity: 0, y: 18 });
+
+        /*
+           Arranca pausada. Quién la larga depende de si hay portada:
+
+           · Con portada, la larga el botón de ingreso. Un ScrollTrigger no
+             sirve acá: esta es la primera sección, así que ya está "a la
+             vista" en la carga aunque la portada la tape, y la entrada se
+             consumiría sola mientras el invitado todavía mira la tapa.
+
+           · Sin portada, se comporta como el resto de las secciones y la
+             larga el scroll.
+        */
+        const linea = gsap.timeline({ paused: true });
+
+        linea
+            // 1 · la foto aparece y se va acomodando: un respiro, no un
+            //     efecto. El recorte de la caja contiene el zoom.
+            .to(caja, { opacity: 1, duration: 1, ease: "power2.out" })
+            .to(foto, { scale: 1, duration: 2.6, ease: "power2.out" }, 0)
+            // 2 · las iniciales se posan sobre la foto
+            .to(
+                marca,
+                { opacity: 0.4, y: 0, duration: 1.1, ease: "power2.out" },
+                0.5,
+            )
+            // 3 · el anuncio, los nombres y la fecha, uno tras otro
+            .to(
+                renglones,
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.9,
+                    stagger: 0.2,
+                    ease: "power2.out",
+                },
+                0.8,
+            );
+
+        // ═══ QUIÉN LARGA LA ENTRADA ═══
+        function arrancar() {
+            /*
+               La portada tenía el scroll bloqueado y ocupaba la pantalla,
+               así que las medidas que ScrollTrigger calculó en la carga ya
+               no valen. El refresh las rehace antes de reproducir.
+            */
+            ScrollTrigger.refresh();
+            linea.restart();
+        }
+
+        const portada = document.getElementById("portada-section");
+
+        if ((window as any).portadaAbierta) {
+            // Su script corrió antes que este y ya avisó
+            arrancar();
+        } else if (portada) {
+            window.addEventListener("portada-abierta", arrancar, {
+                once: true,
+            });
+        } else {
+            // Sin portada: entra con el scroll, como las demás secciones
+            ScrollTrigger.create({
+                trigger: caja,
+                start: "top 78%",
+                onEnter: () => linea.restart(),
+                onLeaveBack: () => linea.pause(0),
+            });
+        }
+    });
+</script>

@@ -1,0 +1,206 @@
+---
+// src/components/NombresPadres.astro
+// La bendición y los nombres de los padres en Tangerine verde, entre dos
+// filigranas doradas: separador-arriba y separador-abajo.
+//
+// ── De dónde salen las medidas ────────────────────────────────
+// No son a ojo. Se midió el diseño renglón por renglón y se cruzó con los
+// anchos reales de la Tangerine. Los cinco renglones dan el mismo tamaño
+// —6,83 · 6,83 · 6,85 · 6,81 · 6,79— así que la letra es una sola para
+// todos, títulos y nombres por igual: 6.8cqw, o sea el 6,8% del ancho de
+// la columna.
+//
+// Ese cruce también dice cuál de las dos Tangerine es: con la Bold los
+// cinco renglones no coinciden entre sí, con la Regular sí. Va la Regular.
+//
+// Los espacios están calculados desde donde empieza y termina la TINTA,
+// no desde el borde de los bloques: esta letra sobresale de su propia
+// caja, así que los márgenes del CSS no son los huecos que se ven. Si se
+// cambia el tamaño de letra o el line-height, hay que rehacerlos todos.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const bendicion = "Con la bendición de Dios y nuestros padres:";
+
+const padres = [
+    ["Santos G. Torrico Barra", "Ludgarda Laura Yana"],
+    ["Richard Cardenas Pinto", "Magaly S. Soliz"],
+];
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="nombres-padres" class="seccion">
+    <div id="bloque-padres" class="bloque">
+        <img
+            src="/imagenes/separador-arriba.webp"
+            alt=""
+            width="760"
+            height="166"
+            aria-hidden="true"
+            class="separador separador-arriba"
+        />
+
+        <p class="bendicion font-tangerine">{bendicion}</p>
+
+        {
+            padres.map((grupo) => (
+                <div class="grupo">
+                    {grupo.map((nombre) => (
+                        <p class="nombre font-tangerine">{nombre}</p>
+                    ))}
+                </div>
+            ))
+        }
+
+        <img
+            src="/imagenes/separador-abajo.webp"
+            alt=""
+            width="760"
+            height="163"
+            aria-hidden="true"
+            class="separador separador-abajo"
+        />
+    </div>
+</section>
+
+<style>
+    .seccion {
+        position: relative;
+        width: 100%;
+        padding: 8% 0;
+    }
+
+    /*
+       container-type deja medir todo contra el ancho de la columna y no
+       contra la pantalla: así el bloque guarda la misma proporción en
+       cualquier celular. Con esto, 1cqw es el 1% del ancho de la columna.
+    */
+    .bloque {
+        container-type: inline-size;
+        width: 100%;
+        text-align: center;
+    }
+
+    /*
+       Las dos filigranas van dadas vuelta de arriba abajo. El giro está
+       escrito también en la animación de entrada: GSAP reescribe el
+       transform entero cuando anima la escala, así que si allá no dice
+       scaleY -1, las filigranas se dan vuelta solas al aparecer.
+    */
+    .separador {
+        display: block;
+        height: auto;
+        margin: 0 auto;
+        transform: scaleY(-1);
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /* Las dos filigranas no son gemelas: cada una trae su propio ancho */
+    .separador-arriba {
+        width: 53.2%;
+    }
+
+    .separador-abajo {
+        width: 52.4%;
+        /* Y del último nombre a la filigrana de abajo, 10% */
+        margin-top: 10.02cqw;
+    }
+
+    /*
+       Un solo tamaño y un solo color para los cinco renglones, como en el
+       diseño. El line-height sale de la distancia entre los dos nombres
+       de un mismo grupo: 7,8% del ancho de la columna.
+    */
+    .bendicion,
+    .nombre {
+        margin: 0;
+        color: #1d7d49;
+        /* El diseño daba 6.8cqw; se agrandó un 10% a pedido */
+        font-size: 7.5cqw;
+        line-height: 1.15;
+    }
+
+    /*
+       Aire entre los dos nombres de un mismo grupo. Va como margen del
+       segundo y no subiendo el line-height a propósito: el line-height
+       mueve la tinta dentro de su caja y descuadraría todos los demás
+       huecos, que están calculados contra él.
+    */
+    .nombre + .nombre {
+        margin-top: 2cqw;
+    }
+
+    /* Hasta que empieza la bendición: 10% de hueco desde la filigrana */
+    .bendicion {
+        margin-top: 9.58cqw;
+    }
+
+    /* Y de la bendición al primer nombre, casi 9% */
+    .grupo {
+        margin-top: 8.17cqw;
+    }
+
+    /* Entre los padres del novio y los de la novia, 12% */
+    .grupo + .grupo {
+        margin-top: 11.24cqw;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const bloque = document.getElementById("bloque-padres");
+        if (!bloque) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        const filigranas = Array.from(bloque.querySelectorAll(".separador"));
+        const renglones = Array.from(
+            bloque.querySelectorAll(".bendicion, .nombre"),
+        );
+
+        const disparador = {
+            trigger: bloque,
+            start: "top 82%",
+            toggleActions: "play none none reset",
+        };
+
+        // Las filigranas se abren desde el centro, como si se dibujaran.
+        // El scaleY -1 es el mismo giro que ya tienen en el CSS: va
+        // repetido acá porque GSAP reescribe el transform completo y, sin
+        // esto, las daría vuelta justo al entrar.
+        gsap.fromTo(
+            filigranas,
+            { opacity: 0, scaleX: 0.72, scaleY: -1 },
+            {
+                opacity: 1,
+                scaleX: 1,
+                scaleY: -1,
+                duration: 1.2,
+                stagger: 0.15,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+
+        // Y los nombres caen uno tras otro, de arriba abajo
+        gsap.fromTo(
+            renglones,
+            { opacity: 0, y: 14 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.9,
+                delay: 0.35,
+                stagger: 0.16,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+    });
+</script>

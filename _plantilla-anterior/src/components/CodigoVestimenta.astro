@@ -1,0 +1,161 @@
+---
+// src/components/CodigoVestimenta.astro
+// "Codigo de vestimenta", el traje y el vestido, y abajo la etiqueta y el
+// aviso del blanco. Todo sobre el papel blanco, sin franja ni flores.
+//
+// ── De dónde salen las medidas ────────────────────────────────
+// Se midió el diseño y se cruzó con los anchos reales de las fuentes:
+//
+//   título    Verandah Reverie — la letra de los títulos de toda la
+//             invitación, al mismo tamaño que en las otras secciones
+//   textos    Tangerine Regular — "Formal" da 10.12cqw y el aviso 8.56,
+//             así que NO son del mismo tamaño: la etiqueta va más
+//             grande. En el diseño también se ve así
+//
+// El traje y el vestido se pintan con máscara (la clase .icono de
+// global.css): la silueta del PNG sale del color que se le pida, sin
+// tener que retocar la imagen. El archivo viene en marrón y acá se usa
+// verde, y no hizo falta abrir ningún editor.
+//
+// Todo se mide contra el ancho de la columna: 1cqw = 1% de ese ancho.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+// Las dos fuentes de acá traen los acentuados del castellano: se
+// midieron sus tablas de caracteres. La que NO los trae es la Tempting,
+// que en esta invitación solo se usa en rótulos sin tilde.
+const titulo = "Código de vestimenta";
+const etiqueta = "Formal";
+const aviso = "El blanco está reservado para la novia";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="codigo-vestimenta" class="seccion">
+    <p class="titulo font-verandah">{titulo}</p>
+
+    <span
+        id="prendas-vestimenta"
+        class="icono prendas"
+        style="--ic: url('/imagenes/vesti.png')"
+        aria-hidden="true"></span>
+
+    <p class="etiqueta font-tangerine">{etiqueta}</p>
+    <p class="aviso font-tangerine">{aviso}</p>
+</section>
+
+<style>
+    /*
+       container-type deja medir todo contra el ancho de la columna y no
+       contra la pantalla: 1cqw es el 1% de ese ancho.
+    */
+    .seccion {
+        container-type: inline-size;
+        position: relative;
+        width: 100%;
+        padding: 9% 0;
+        text-align: center;
+    }
+
+    .titulo {
+        margin: 0 0 9.9cqw;
+        color: #075843;
+        font-size: 10.5cqw;
+        line-height: 1;
+    }
+
+    /*
+       La silueta se pinta con el fondo, porque la máscara recorta lo que
+       haya detrás. Va como degradado de un solo color y no como
+       background-color: el modo oscuro forzado recalcula los colores
+       pero respeta las imágenes, y un degradado cuenta como imagen.
+    */
+    .prendas {
+        /*
+           .icono viene como inline-block. Acá se pasa a bloque a
+           propósito: como elemento en línea se apoya en la base del
+           renglón y el navegador le deja un hueco debajo, que
+           descuadraría la separación con "Formal".
+        */
+        display: block;
+        margin: 0 auto;
+        width: 18.2%;
+        /* La proporción es la del archivo: así no se deforma */
+        aspect-ratio: 571 / 523;
+        background-image: linear-gradient(#075843, #075843);
+    }
+
+    .etiqueta {
+        margin: 13.1cqw 0 0;
+        color: #2b674e;
+        font-size: 10.1cqw;
+        line-height: 1;
+    }
+
+    .aviso {
+        margin: 3.2cqw 0 0;
+        color: #2b674e;
+        font-size: 8.56cqw;
+        line-height: 1.15;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const seccion = document.getElementById("codigo-vestimenta");
+        if (!seccion) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        const disparador = {
+            trigger: seccion,
+            start: "top 82%",
+            toggleActions: "play none none reset",
+        };
+
+        gsap.fromTo(
+            seccion.querySelector(".titulo"),
+            { opacity: 0, y: 14 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.9,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+
+        // Las prendas entran creciendo apenas, como si se colgaran
+        gsap.fromTo(
+            seccion.querySelector(".prendas"),
+            { opacity: 0, scale: 0.82, y: -10 },
+            {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 1.1,
+                delay: 0.3,
+                ease: "back.out(1.4)",
+                scrollTrigger: disparador,
+            },
+        );
+
+        gsap.fromTo(
+            seccion.querySelectorAll(".etiqueta, .aviso"),
+            { opacity: 0, y: 14 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: 0.7,
+                stagger: 0.18,
+                ease: "power2.out",
+                scrollTrigger: disparador,
+            },
+        );
+    });
+</script>

@@ -1,0 +1,538 @@
+---
+// src/components/SugerenciaRegalo.astro
+// Franja de papel crema rasgada con el "Sugerencias" y, debajo: el aviso,
+// el logo de Hiper Hogar, el botón a la lista de regalos, el tulipán y el
+// QR del banco.
+//
+// El ramo de arriba va POR ENCIMA del papel, como en el código de
+// vestimenta.
+//
+// Medidas del diseño, en % del ancho de la columna:
+//   banda   25% de alto
+//   logo y botón, del mismo ancho, uno debajo del otro
+//   flor2 13% de ancho · QR 31%
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "Sugerencias";
+
+const aviso = [
+    "Su presencia es lo más importante,",
+    "pero si desean hacernos un presente:",
+];
+
+const textoBoton = "Lista de regalos";
+// El PDF con la lista, que vive en public/imagenes. Se abre en otra
+// pestaña, así el invitado no pierde la invitación.
+const listaRegalos = "/imagenes/lista-regalos.pdf";
+
+// Los datos de la cuenta, debajo del QR
+const cuenta = ["Cuenta destino: 1503273485", "Pagar a: Vargas Fernández Sebastián"];
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="sugerencia-regalo" class="seccion">
+    <div class="marco-banda">
+        <!--
+           El ramo asoma por detrás del papel. Va adentro de una caja: la
+           caja es la que se anima y la imagen se queda con su volteo, sin
+           que uno pise al otro.
+        -->
+        <span class="caja-flores" aria-hidden="true">
+            <img
+                src="/imagenes/florlateral2.png"
+                alt=""
+                width="756"
+                height="960"
+                class="flores"
+            />
+        </span>
+
+        <div id="banda-regalos" class="banda">
+            <h2 class="titulo font-elegant">{titulo}</h2>
+        </div>
+    </div>
+
+    <div id="cuerpo-regalos" class="cuerpo">
+        <p class="aviso font-cormorant">
+            {aviso[0]}<br />{aviso[1]}
+        </p>
+
+        <!-- El logo va en su propia tarjeta blanca, como en el diseño -->
+        <div class="tarjeta-logo">
+            <img
+                src="/imagenes/hiperhogar.png"
+                alt="Hiper Hogar"
+                width="614"
+                height="244"
+                class="logo"
+            />
+        </div>
+
+        <!--
+           El botón lleva un ícono de lista al lado del texto: sin él, un
+           rectángulo de color solo no se lee como algo para tocar.
+        -->
+        <a
+            class="boton font-cormorant"
+            href={listaRegalos}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <svg
+                class="icono-lista"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"
+                ></path>
+                <path d="M14 3v5h5"></path>
+                <path d="M9 13h6"></path>
+                <path d="M9 17h4"></path>
+            </svg>
+            <span>{textoBoton}</span>
+        </a>
+
+        <p class="pista font-cormorant">Toca el botón para ver la lista de regalos</p>
+
+        <img
+            src="/imagenes/flor2.png"
+            alt=""
+            aria-hidden="true"
+            width="233"
+            height="132"
+            class="flor"
+        />
+
+        <!-- El QR ya trae el rótulo BNB adentro de la imagen -->
+        <img
+            src="/imagenes/qr.png"
+            alt="Código QR de la cuenta del BNB"
+            width="441"
+            height="505"
+            class="qr"
+        />
+
+        <div class="cuenta font-cormorant">
+            {cuenta.map((linea) => <p>{linea}</p>)}
+        </div>
+    </div>
+</section>
+
+<style>
+    .seccion {
+        position: relative;
+        width: 100%;
+        padding: 0 0 3.5rem;
+    }
+
+    /* Sin recorte propio: el ramo tiene que poder salirse de la banda */
+    .marco-banda {
+        position: relative;
+        width: 100%;
+    }
+
+    /*
+       z-index 0: DETRÁS del papel (la banda va con 1), así el ramo asoma
+       por el filo rasgado. Espejado en horizontal para que se abra hacia
+       el borde derecho, que es del lado que entra.
+    */
+    /*
+       La caja lleva la posición y es la que anima GSAP; la imagen guarda
+       el volteo. Separadas a propósito: si la animación tocara la misma
+       imagen que lleva el scaleX(-1), GSAP leería ese menos como media
+       vuelta y el ramo giraría como un trompo al entrar.
+    */
+    .caja-flores {
+        position: absolute;
+        top: -6.5rem;
+        right: -1rem;
+        width: 24%;
+        z-index: 0;
+        pointer-events: none;
+        filter: drop-shadow(0 6px 10px rgba(90, 70, 20, 0.18));
+    }
+
+    .flores {
+        display: block;
+        width: 100%;
+        height: auto;
+        user-select: none;
+        transform: scaleX(-1);
+    }
+
+    /*
+       La banda de papel: el mismo rasgado del modelo, con el trazo corrido
+       (35 arriba y 3 abajo) para que no repita el de las otras franjas.
+    */
+    .banda {
+        position: relative;
+        width: 100%;
+        z-index: 1;
+        background: #f7f3d3;
+        padding: 2.6rem 1.8rem 2.8rem;
+        clip-path: polygon(
+            0.00% 2.09%,
+            1.82% 0.51%,
+            3.64% 1.63%,
+            5.45% 2.75%,
+            7.27% 2.97%,
+            9.09% 4.20%,
+            10.91% 6.82%,
+            12.73% 5.66%,
+            14.55% 5.36%,
+            16.36% 3.60%,
+            18.18% 3.56%,
+            20.00% 4.10%,
+            21.82% 3.27%,
+            23.64% 2.37%,
+            25.45% 4.14%,
+            27.27% 6.65%,
+            29.09% 5.79%,
+            30.91% 3.84%,
+            32.73% 6.00%,
+            34.55% 4.95%,
+            36.36% 5.64%,
+            38.18% 8.50%,
+            40.00% 4.15%,
+            41.82% 4.00%,
+            43.64% 4.25%,
+            45.45% 6.51%,
+            47.27% 5.98%,
+            49.09% 6.16%,
+            50.91% 5.56%,
+            52.73% 4.89%,
+            54.55% 6.00%,
+            56.36% 6.46%,
+            58.18% 6.49%,
+            60.00% 6.36%,
+            61.82% 4.33%,
+            63.64% 7.05%,
+            65.45% 5.69%,
+            67.27% 3.71%,
+            69.09% 2.14%,
+            70.91% 1.75%,
+            72.73% 2.50%,
+            74.55% 3.40%,
+            76.36% 5.33%,
+            78.18% 4.30%,
+            80.00% 5.93%,
+            81.82% 6.47%,
+            83.64% 6.21%,
+            85.45% 4.14%,
+            87.27% 5.07%,
+            89.09% 5.17%,
+            90.91% 6.42%,
+            92.73% 5.33%,
+            94.55% 5.17%,
+            96.36% 4.87%,
+            98.18% 3.99%,
+            100.00% 2.21%,
+            100.00% 96.00%,
+            98.18% 95.85%,
+            96.36% 91.50%,
+            94.55% 94.36%,
+            92.73% 95.05%,
+            90.91% 94.00%,
+            89.09% 96.16%,
+            87.27% 94.21%,
+            85.45% 93.35%,
+            83.64% 95.86%,
+            81.82% 97.63%,
+            80.00% 96.73%,
+            78.18% 95.90%,
+            76.36% 96.44%,
+            74.55% 96.40%,
+            72.73% 94.64%,
+            70.91% 94.34%,
+            69.09% 93.18%,
+            67.27% 95.80%,
+            65.45% 97.03%,
+            63.64% 97.25%,
+            61.82% 98.37%,
+            60.00% 99.49%,
+            58.18% 97.91%,
+            56.36% 97.79%,
+            54.55% 96.01%,
+            52.73% 95.13%,
+            50.91% 94.83%,
+            49.09% 94.67%,
+            47.27% 93.58%,
+            45.45% 94.83%,
+            43.64% 94.93%,
+            41.82% 95.86%,
+            40.00% 93.79%,
+            38.18% 93.53%,
+            36.36% 94.07%,
+            34.55% 95.70%,
+            32.73% 94.67%,
+            30.91% 96.60%,
+            29.09% 97.50%,
+            27.27% 98.25%,
+            25.45% 97.86%,
+            23.64% 96.29%,
+            21.82% 94.31%,
+            20.00% 92.95%,
+            18.18% 95.67%,
+            16.36% 93.64%,
+            14.55% 93.51%,
+            12.73% 93.54%,
+            10.91% 94.00%,
+            9.09% 95.11%,
+            7.27% 94.44%,
+            5.45% 93.84%,
+            3.64% 94.02%,
+            1.82% 93.49%,
+            0.00% 95.75%
+        );
+    }
+
+    /* Mismo tamaño y color que los otros títulos de la invitación */
+    .titulo {
+        margin: 0 auto;
+        text-align: center;
+        color: #643e1a;
+        font-size: clamp(2.35rem, 10.7vw, 2.9rem);
+        line-height: 1.2;
+    }
+
+    /* ── El cuerpo ─────────────────────────────────────────── */
+    .cuerpo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2.4rem 1rem 0;
+        text-align: center;
+    }
+
+    /*
+       Este renglón va en Cormorant y no en la caligrafía: es el que
+       explica algo concreto y tiene que leerse de un vistazo.
+    */
+    .aviso {
+        color: #643e1a;
+        font-size: clamp(1.25rem, 5.5vw, 1.45rem);
+        line-height: 1.55;
+    }
+
+    /*
+       El logo y el botón comparten ancho: en el diseño están alineados uno
+       encima del otro y así se leen como un solo bloque.
+    */
+    /*
+       Solo la tarjeta del logo lleva ancho fijo. El botón se mide por su
+       texto: si le imponía este ancho, "LISTA DE REGALOS" se le salía.
+    */
+    .tarjeta-logo {
+        width: 46%;
+        max-width: 12.5rem;
+        box-sizing: border-box;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(90, 65, 25, 0.12);
+    }
+
+    .tarjeta-logo {
+        margin-top: 1.6rem;
+        padding: 0.7rem 1.2rem;
+        background: #ffffff;
+    }
+
+    .logo {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    /*
+       Mismo trato que el botón de la recepción —mayúsculas, letras
+       separadas, Cormorant— pero pintado en el naranja de Hiper Hogar.
+    */
+    .boton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.1rem;
+        padding: 0.6rem 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        /* Sin separación entre letras y en un solo renglón */
+        white-space: nowrap;
+        color: #ffffff;
+        background: #ff7100;
+        border-radius: 999px;
+        font-size: clamp(1.05rem, 4.6vw, 1.2rem);
+        line-height: 1.4;
+        box-shadow: 0 5px 14px rgba(255, 113, 0, 0.35);
+        /* Late despacio para que se note que se puede tocar */
+        animation: latido 2.6s ease-in-out infinite;
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            background-color 0.25s ease;
+    }
+
+    @keyframes latido {
+        0%,
+        100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.045);
+        }
+    }
+
+    .icono-lista {
+        width: 1.05em;
+        height: 1.05em;
+        flex-shrink: 0;
+    }
+
+    .boton:hover {
+        background: #ff8420;
+        box-shadow: 0 9px 20px rgba(255, 113, 0, 0.45);
+    }
+
+    /* Se hunde al tocarlo: la señal de que respondió */
+    .boton:active {
+        animation: none;
+        transform: scale(0.97);
+        box-shadow: 0 2px 6px rgba(90, 65, 25, 0.2);
+    }
+
+    /* La pista de abajo: le dice al invitado qué pasa si lo toca */
+    .pista {
+        margin-top: 0.5rem;
+        color: #643e1a;
+        font-size: clamp(1.2rem, 5.2vw, 1.35rem);
+        line-height: 1.4;
+    }
+
+    /* Quien pide menos movimiento no ve el latido */
+    @media (prefers-reduced-motion: reduce) {
+        .boton {
+            animation: none;
+        }
+    }
+
+    .flor {
+        display: block;
+        width: 22%;
+        max-width: 6rem;
+        height: auto;
+        margin-top: 1.6rem;
+        user-select: none;
+    }
+
+    /* Bien grande: tiene que poder escanearse desde el teléfono */
+    .qr {
+        display: block;
+        width: 52%;
+        max-width: 14rem;
+        height: auto;
+        margin-top: 1.2rem;
+    }
+
+    /*
+       Los datos de la cuenta también en Cormorant: son un número
+       que alguien va a copiar, y la caligrafía se presta a confusiones.
+    */
+    .cuenta {
+        margin-top: 1rem;
+        color: #643e1a;
+        font-size: clamp(1.1rem, 4.8vw, 1.25rem);
+        line-height: 1.6;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const banda = document.getElementById("banda-regalos");
+        const cuerpo = document.getElementById("cuerpo-regalos");
+        if (!banda || !cuerpo) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        /*
+           Las flores entran creciendo desde chiquitas hasta su tamaño y
+           después quedan meciéndose despacio, como si estuvieran vivas.
+           El volteo viaja dentro de la animación (el signo de scaleX /
+           scaleY) y no en el CSS: GSAP escribe su propio transform, así
+           que si lo dejaba en la hoja de estilos se perdería al animar.
+        */
+        const flores = document.querySelector<HTMLElement>(
+            "#sugerencia-regalo .caja-flores",
+        );
+        if (flores) {
+            gsap.fromTo(
+                flores,
+                { scale: 0.45, x: 70, opacity: 0 },
+                {
+                    scale: 1,
+                    x: 0,
+                    opacity: 1,
+                    duration: 1.5,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: flores,
+                        start: "top 95%",
+                        toggleActions: "play none none reset",
+                    },
+                    onComplete: () => {
+                        gsap.to(flores, {
+                            rotation: 1.6,
+                            duration: 5,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: "sine.inOut",
+                        });
+                    },
+                },
+            );
+        }
+
+        gsap.fromTo(
+            banda.querySelector(".titulo"),
+            { opacity: 0, y: 16 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: banda,
+                    start: "top 85%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        gsap.fromTo(
+            cuerpo.children,
+            { opacity: 0, y: 16 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                stagger: 0.12,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: cuerpo,
+                    start: "top 88%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+    });
+</script>

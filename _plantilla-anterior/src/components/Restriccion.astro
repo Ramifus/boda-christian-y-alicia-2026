@@ -1,0 +1,358 @@
+---
+// src/components/Restriccion.astro
+// Franja de papel crema rasgada con el "Celebración Para Adultos" y,
+// debajo, el cartel de "sin niños", el pedido y el cierre.
+//
+// Acá el ramo va DETRÁS del papel, como en el cronograma: asoma por
+// encima del filo rasgado en vez de apoyarse sobre él.
+//
+// Medidas del diseño, en % del ancho de la columna:
+//   banda   21.6% de alto
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "Celebración Para Adultos";
+
+const parrafo = [
+    "Queremos que esta noche sea inolvidable.",
+    "Para que todos podamos celebrar sin preocupaciones.",
+    "La fiesta será solo para adultos",
+];
+
+const cierre = "¡Niños a la cama!";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="restriccion" class="seccion">
+    <div class="marco-banda">
+        <!-- El ramo asoma por detrás del papel (z-index 0, la banda va 1) -->
+        <img
+            src="/imagenes/florlateral2.png"
+            alt=""
+            aria-hidden="true"
+            width="756"
+            height="960"
+            class="flores"
+        />
+
+        <div id="banda-restriccion" class="banda">
+            <h2 class="titulo font-elegant">{titulo}</h2>
+        </div>
+    </div>
+
+    <div id="cuerpo-restriccion" class="cuerpo">
+        <div class="cartel" aria-hidden="true"></div>
+
+        <div class="parrafo font-cormorant">
+            {parrafo.map((linea) => <p>{linea}</p>)}
+        </div>
+
+        <p class="cierre font-cormorant">{cierre}</p>
+    </div>
+</section>
+
+<style>
+    .seccion {
+        position: relative;
+        width: 100%;
+        padding: 0 0 3.5rem;
+    }
+
+    /* Sin recorte propio: el ramo tiene que poder salirse de la banda */
+    .marco-banda {
+        position: relative;
+        width: 100%;
+    }
+
+    /*
+       z-index 0 la manda DETRÁS del papel: la banda va con z-index 1 y le
+       tapa la parte de abajo, así el ramo asoma por el filo rasgado.
+       No se voltea: florlateral2 ya viene con los tulipanes para arriba.
+    */
+    .flores {
+        position: absolute;
+        top: -6rem;
+        left: -1rem;
+        width: 24%;
+        height: auto;
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+        filter: drop-shadow(0 6px 10px rgba(90, 70, 20, 0.18));
+    }
+
+    /*
+       La banda de papel: el mismo rasgado del modelo, con el trazo corrido
+       (52 arriba y 29 abajo) para que no repita el de las otras franjas.
+    */
+    .banda {
+        position: relative;
+        width: 100%;
+        z-index: 1;
+        background: #f7f3d3;
+        padding: 2.6rem 1.8rem 2.8rem;
+        clip-path: polygon(
+            0.00% 3.84%,
+            1.82% 6.00%,
+            3.64% 4.95%,
+            5.45% 5.64%,
+            7.27% 8.50%,
+            9.09% 4.15%,
+            10.91% 4.00%,
+            12.73% 4.25%,
+            14.55% 6.51%,
+            16.36% 5.98%,
+            18.18% 6.16%,
+            20.00% 5.56%,
+            21.82% 4.89%,
+            23.64% 6.00%,
+            25.45% 6.46%,
+            27.27% 6.49%,
+            29.09% 6.36%,
+            30.91% 4.33%,
+            32.73% 7.05%,
+            34.55% 5.69%,
+            36.36% 3.71%,
+            38.18% 2.14%,
+            40.00% 1.75%,
+            41.82% 2.50%,
+            43.64% 3.40%,
+            45.45% 5.33%,
+            47.27% 4.30%,
+            49.09% 5.93%,
+            50.91% 6.47%,
+            52.73% 6.21%,
+            54.55% 4.14%,
+            56.36% 5.07%,
+            58.18% 5.17%,
+            60.00% 6.42%,
+            61.82% 5.33%,
+            63.64% 5.17%,
+            65.45% 4.87%,
+            67.27% 3.99%,
+            69.09% 2.21%,
+            70.91% 2.09%,
+            72.73% 0.51%,
+            74.55% 1.63%,
+            76.36% 2.75%,
+            78.18% 2.97%,
+            80.00% 4.20%,
+            81.82% 6.82%,
+            83.64% 5.66%,
+            85.45% 5.36%,
+            87.27% 3.60%,
+            89.09% 3.56%,
+            90.91% 4.10%,
+            92.73% 3.27%,
+            94.55% 2.37%,
+            96.36% 4.14%,
+            98.18% 6.65%,
+            100.00% 5.79%,
+            100.00% 94.83%,
+            98.18% 94.93%,
+            96.36% 95.86%,
+            94.55% 93.79%,
+            92.73% 93.53%,
+            90.91% 94.07%,
+            89.09% 95.70%,
+            87.27% 94.67%,
+            85.45% 96.60%,
+            83.64% 97.50%,
+            81.82% 98.25%,
+            80.00% 97.86%,
+            78.18% 96.29%,
+            76.36% 94.31%,
+            74.55% 92.95%,
+            72.73% 95.67%,
+            70.91% 93.64%,
+            69.09% 93.51%,
+            67.27% 93.54%,
+            65.45% 94.00%,
+            63.64% 95.11%,
+            61.82% 94.44%,
+            60.00% 93.84%,
+            58.18% 94.02%,
+            56.36% 93.49%,
+            54.55% 95.75%,
+            52.73% 96.00%,
+            50.91% 95.85%,
+            49.09% 91.50%,
+            47.27% 94.36%,
+            45.45% 95.05%,
+            43.64% 94.00%,
+            41.82% 96.16%,
+            40.00% 94.21%,
+            38.18% 93.35%,
+            36.36% 95.86%,
+            34.55% 97.63%,
+            32.73% 96.73%,
+            30.91% 95.90%,
+            29.09% 96.44%,
+            27.27% 96.40%,
+            25.45% 94.64%,
+            23.64% 94.34%,
+            21.82% 93.18%,
+            20.00% 95.80%,
+            18.18% 97.03%,
+            16.36% 97.25%,
+            14.55% 98.37%,
+            12.73% 99.49%,
+            10.91% 97.91%,
+            9.09% 97.79%,
+            7.27% 96.01%,
+            5.45% 95.13%,
+            3.64% 94.83%,
+            1.82% 94.67%,
+            0.00% 93.58%
+        );
+    }
+
+    /* Mismo tamaño y color que los otros títulos de la invitación */
+    .titulo {
+        margin: 0 auto;
+        text-align: center;
+        color: #643e1a;
+        font-size: clamp(2.35rem, 10.7vw, 2.9rem);
+        line-height: 1.2;
+    }
+
+    /* ── El cuerpo ─────────────────────────────────────────── */
+    .cuerpo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3rem 1.2rem 0;
+        text-align: center;
+    }
+
+    /*
+       El cartel de "sin niños". Como el bus de la ceremonia: el png viene
+       en negro, así que se usa de máscara y el color lo pone el fondo,
+       para que quede en el mismo marrón que el texto. Si el navegador no
+       entiende mask, se ve el png tal cual.
+    */
+    .cartel {
+        width: 27%;
+        max-width: 7rem;
+        aspect-ratio: 1;
+        margin-bottom: 1.8rem;
+        background: url("/imagenes/restriccion.png") center / contain no-repeat;
+    }
+
+    @supports (mask-image: url("")) or (-webkit-mask-image: url("")) {
+        .cartel {
+            background: #643e1a;
+            -webkit-mask: url("/imagenes/restriccion.png") center / contain
+                no-repeat;
+            mask: url("/imagenes/restriccion.png") center / contain no-repeat;
+        }
+    }
+
+    .parrafo {
+        color: #643e1a;
+        font-size: clamp(1.25rem, 5.5vw, 1.45rem);
+        line-height: 1.65;
+    }
+
+    /*
+       El cierre va en versales y con las letras separadas, como en el
+       diseño. En Cormorant y no en Rantera porque esa no trae la "Ñ" ni
+       los signos de apertura.
+    */
+    .cierre {
+        margin-top: 2.2rem;
+        color: #643e1a;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: clamp(1.5rem, 6.6vw, 1.8rem);
+        line-height: 1.3;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const banda = document.getElementById("banda-restriccion");
+        const cuerpo = document.getElementById("cuerpo-restriccion");
+        if (!banda || !cuerpo) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        /*
+           Las flores entran creciendo desde chiquitas hasta su tamaño y
+           después quedan meciéndose despacio, como si estuvieran vivas.
+        */
+        const flores = document.querySelector<HTMLElement>(
+            "#restriccion .flores",
+        );
+        if (flores) {
+            gsap.fromTo(
+                flores,
+                { scaleX: 0.45, scaleY: 0.45, x: -70, opacity: 0 },
+                {
+                    scaleX: 1,
+                    scaleY: 1,
+                    x: 0,
+                    opacity: 1,
+                    duration: 1.5,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: flores,
+                        start: "top 95%",
+                        toggleActions: "play none none reset",
+                    },
+                    onComplete: () => {
+                        gsap.to(flores, {
+                            rotation: 1.6,
+                            duration: 5,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: "sine.inOut",
+                        });
+                    },
+                },
+            );
+        }
+
+        gsap.fromTo(
+            banda.querySelector(".titulo"),
+            { opacity: 0, y: 16 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: banda,
+                    start: "top 85%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        gsap.fromTo(
+            [
+                cuerpo.querySelector(".cartel"),
+                ...cuerpo.querySelectorAll(".parrafo p"),
+                cuerpo.querySelector(".cierre"),
+            ].filter(Boolean),
+            { opacity: 0, y: 16 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                stagger: 0.14,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: cuerpo,
+                    start: "top 88%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+    });
+</script>

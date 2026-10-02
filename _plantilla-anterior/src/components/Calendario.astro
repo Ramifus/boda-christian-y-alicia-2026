@@ -1,0 +1,525 @@
+---
+// src/components/Calendario.astro
+// Franja de papel crema rasgada con el "Calendario" y las flores asomando
+// por la esquina de arriba a la derecha; debajo, la tarjeta con el mes:
+// el nombre y el año a la izquierda, el tulipán al medio y la grilla del
+// mes a la derecha, con el día de la boda marcado con un corazón.
+//
+// Medidas del diseño, en % del ancho de la columna:
+//   banda    21% de alto
+//   tarjeta  60.5% de ancho, centrada
+// Y adentro de la tarjeta, en % de SU ancho:
+//   mes 7.5% · año 14% · grilla 3.6% · tulipán 11% de ancho
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "Calendario";
+// La boda: 19 de septiembre de 2026 (mes 8 porque enero es 0)
+const anioBoda = 2026;
+const mesBoda = 8;
+const diaBoda = 19;
+const nombreMes = "Septiembre";
+// ──────────────────────────────────────────────────────────────
+
+const cabeceras = ["D", "L", "M", "M", "J", "V", "S"];
+
+/*
+   La grilla se arma sola con la fecha: así el mes siempre cae en el día
+   de la semana correcto y no hay que dibujarlo a mano.
+   Septiembre de 2026 arranca un martes y tiene 30 días.
+*/
+const primerDia = new Date(anioBoda, mesBoda, 1).getDay();
+const diasDelMes = new Date(anioBoda, mesBoda + 1, 0).getDate();
+
+const celdas: (number | null)[] = [
+    ...Array(primerDia).fill(null),
+    ...Array.from({ length: diasDelMes }, (_, i) => i + 1),
+];
+while (celdas.length % 7 !== 0) celdas.push(null);
+
+const semanas: (number | null)[][] = [];
+for (let i = 0; i < celdas.length; i += 7) semanas.push(celdas.slice(i, i + 7));
+---
+
+<section id="calendario" class="seccion">
+    <div class="marco-banda">
+        <!--
+           Las flores pisan la banda desde la esquina de arriba a la
+           derecha. Van adentro de una caja: la caja es la que se anima y
+           la imagen se queda con su volteo, sin que uno pise al otro.
+        -->
+        <span class="caja-flores" aria-hidden="true">
+            <img
+                src="/imagenes/florlateral.png"
+                alt=""
+                width="440"
+                height="482"
+                class="flores"
+            />
+        </span>
+
+        <div id="banda-calendario" class="banda">
+            <h2 class="titulo font-elegant">{titulo}</h2>
+        </div>
+    </div>
+
+    <div id="tarjeta-calendario" class="tarjeta">
+        <!-- Mes y año -->
+        <div class="mes">
+            <p class="nombre-mes font-rantera">{nombreMes}</p>
+
+            <div class="fila-anio">
+                <svg class="corazon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M12 21s-7.5-4.7-9.3-9A5.3 5.3 0 0 1 12 6.5 5.3 5.3 0 0 1 21.3 12c-1.8 4.3-9.3 9-9.3 9z"
+                    ></path>
+                </svg>
+                <p class="anio font-elegant">{anioBoda}</p>
+            </div>
+        </div>
+
+        <!-- El tulipán, parado entre el mes y la grilla -->
+        <img
+            src="/imagenes/flo.png"
+            alt=""
+            aria-hidden="true"
+            width="74"
+            height="365"
+            class="tulipan"
+        />
+
+        <!-- La grilla del mes -->
+        <div class="grilla">
+            {cabeceras.map((c) => <span class="cabecera">{c}</span>)}
+
+            {
+                semanas.map((semana) =>
+                    semana.map((dia) => (
+                        <span class:list={["dia", { boda: dia === diaBoda }]}>
+                            {dia && (
+                                <>
+                                    {dia === diaBoda && (
+                                        <svg
+                                            class="marca"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M12 21s-7.5-4.7-9.3-9A5.3 5.3 0 0 1 12 6.5 5.3 5.3 0 0 1 21.3 12c-1.8 4.3-9.3 9-9.3 9z" />
+                                        </svg>
+                                    )}
+                                    <span class="numero">{dia}</span>
+                                </>
+                            )}
+                        </span>
+                    )),
+                )
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .seccion {
+        position: relative;
+        width: 100%;
+        padding: 0 0 3.5rem;
+    }
+
+    /* Sin recorte: las flores tienen que poder salirse de la banda */
+    .marco-banda {
+        position: relative;
+        width: 100%;
+    }
+
+    /*
+       Espejadas en horizontal para que entren desde la derecha: la imagen
+       viene con los tallos hacia la izquierda.
+    */
+    /*
+       La caja lleva la posición y es la que anima GSAP. La imagen de
+       adentro guarda el volteo. Están separadas a propósito: si la
+       animación tocara la misma imagen que lleva el scaleX(-1), GSAP
+       leería ese menos como media vuelta y el ramo giraría como un trompo
+       al entrar.
+    */
+    .caja-flores {
+        position: absolute;
+        top: -2.5rem;
+        right: -1.5rem;
+        width: 30%;
+        z-index: 2;
+        pointer-events: none;
+        filter: drop-shadow(0 6px 10px rgba(90, 70, 20, 0.18));
+    }
+
+    .flores {
+        display: block;
+        width: 100%;
+        height: auto;
+        user-select: none;
+        /* Espejada en horizontal para entrar por la derecha, y volteada
+           en vertical para que los tulipanes miren hacia arriba */
+        transform: scaleX(-1) scaleY(-1);
+    }
+
+    /*
+       La banda de papel: el mismo rasgado del modelo, con el trazo corrido
+       otra vez para que no sea calcado al de las otras franjas.
+    */
+    .banda {
+        position: relative;
+        width: 100%;
+        background: #f7f3d3;
+        padding: 2.6rem 1.8rem 2.8rem;
+        clip-path: polygon(
+            0.00% 6.82%,
+            1.82% 5.66%,
+            3.64% 5.36%,
+            5.45% 3.60%,
+            7.27% 3.56%,
+            9.09% 4.10%,
+            10.91% 3.27%,
+            12.73% 2.37%,
+            14.55% 4.14%,
+            16.36% 6.65%,
+            18.18% 5.79%,
+            20.00% 3.84%,
+            21.82% 6.00%,
+            23.64% 4.95%,
+            25.45% 5.64%,
+            27.27% 8.50%,
+            29.09% 4.15%,
+            30.91% 4.00%,
+            32.73% 4.25%,
+            34.55% 6.51%,
+            36.36% 5.98%,
+            38.18% 6.16%,
+            40.00% 5.56%,
+            41.82% 4.89%,
+            43.64% 6.00%,
+            45.45% 6.46%,
+            47.27% 6.49%,
+            49.09% 6.36%,
+            50.91% 4.33%,
+            52.73% 7.05%,
+            54.55% 5.69%,
+            56.36% 3.71%,
+            58.18% 2.14%,
+            60.00% 1.75%,
+            61.82% 2.50%,
+            63.64% 3.40%,
+            65.45% 5.33%,
+            67.27% 4.30%,
+            69.09% 5.93%,
+            70.91% 6.47%,
+            72.73% 6.21%,
+            74.55% 4.14%,
+            76.36% 5.07%,
+            78.18% 5.17%,
+            80.00% 6.42%,
+            81.82% 5.33%,
+            83.64% 5.17%,
+            85.45% 4.87%,
+            87.27% 3.99%,
+            89.09% 2.21%,
+            90.91% 2.09%,
+            92.73% 0.51%,
+            94.55% 1.63%,
+            96.36% 2.75%,
+            98.18% 2.97%,
+            100.00% 4.20%,
+            100.00% 95.11%,
+            98.18% 94.44%,
+            96.36% 93.84%,
+            94.55% 94.02%,
+            92.73% 93.49%,
+            90.91% 95.75%,
+            89.09% 96.00%,
+            87.27% 95.85%,
+            85.45% 91.50%,
+            83.64% 94.36%,
+            81.82% 95.05%,
+            80.00% 94.00%,
+            78.18% 96.16%,
+            76.36% 94.21%,
+            74.55% 93.35%,
+            72.73% 95.86%,
+            70.91% 97.63%,
+            69.09% 96.73%,
+            67.27% 95.90%,
+            65.45% 96.44%,
+            63.64% 96.40%,
+            61.82% 94.64%,
+            60.00% 94.34%,
+            58.18% 93.18%,
+            56.36% 95.80%,
+            54.55% 97.03%,
+            52.73% 97.25%,
+            50.91% 98.37%,
+            49.09% 99.49%,
+            47.27% 97.91%,
+            45.45% 97.79%,
+            43.64% 96.01%,
+            41.82% 95.13%,
+            40.00% 94.83%,
+            38.18% 94.67%,
+            36.36% 93.58%,
+            34.55% 94.83%,
+            32.73% 94.93%,
+            30.91% 95.86%,
+            29.09% 93.79%,
+            27.27% 93.53%,
+            25.45% 94.07%,
+            23.64% 95.70%,
+            21.82% 94.67%,
+            20.00% 96.60%,
+            18.18% 97.50%,
+            16.36% 98.25%,
+            14.55% 97.86%,
+            12.73% 96.29%,
+            10.91% 94.31%,
+            9.09% 92.95%,
+            7.27% 95.67%,
+            5.45% 93.64%,
+            3.64% 93.51%,
+            1.82% 93.54%,
+            0.00% 94.00%
+        );
+    }
+
+    /* Mismo tamaño y color que el título de la Fecha y del Contador */
+    .titulo {
+        margin: 0 auto;
+        text-align: center;
+        color: #643e1a;
+        font-size: clamp(2.35rem, 10.7vw, 2.9rem);
+        line-height: 1.2;
+    }
+
+    /* ── La tarjeta del mes ────────────────────────────────── */
+    .tarjeta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3%;
+        width: 88%;
+        max-width: 24rem;
+        margin: 2.8rem auto 0;
+        padding: 5% 4%;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 12px 28px rgba(90, 65, 25, 0.13);
+        /* Todo lo de adentro se mide contra el ancho de la tarjeta */
+        container-type: inline-size;
+    }
+
+    .mes {
+        flex: 1 1 auto;
+        min-width: 0;
+        text-align: center;
+    }
+
+    .nombre-mes {
+        color: #6b4e14;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 7.4cqw;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .fila-anio {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2%;
+        margin-top: 2%;
+    }
+
+    .corazon {
+        width: 7cqw;
+        height: 7cqw;
+        flex-shrink: 0;
+        fill: #f3ebb2;
+    }
+
+    .anio {
+        color: #6b4e14;
+        font-size: 14.2cqw;
+        line-height: 1;
+    }
+
+    /* El tulipán marca la mitad de la tarjeta */
+    /*
+       Se mide por el ALTO y no por el ancho: la imagen es muy angosta
+       (74x365) y dándole el ancho quedaba un hilo de pocos píxeles. Con
+       42cqw de alto mide lo mismo que en el diseño y el ancho sale solo.
+    */
+    .tulipan {
+        flex: 0 0 auto;
+        height: 42cqw;
+        width: auto;
+        align-self: center;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    /* ── La grilla del mes ─────────────────────────────────── */
+    .grilla {
+        flex: 0 0 auto;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.35cqw;
+        width: 42cqw;
+        text-align: center;
+    }
+
+    .cabecera {
+        color: #98835e;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 4.8cqw;
+        line-height: 2;
+    }
+
+    /*
+       Cada celda es cuadrada: así el corazón del día de la boda queda
+       centrado sobre el número sin desacomodar la fila.
+    */
+    .dia {
+        position: relative;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b4e14;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 5.2cqw;
+        line-height: 1;
+    }
+
+    .numero {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* El corazón del día de la boda: solo el contorno, detrás del número */
+    .marca {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 7.2cqw;
+        height: 7.2cqw;
+        transform: translate(-50%, -50%);
+        fill: none;
+        stroke: #e8dc93;
+        stroke-width: 1.6;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const banda = document.getElementById("banda-calendario");
+        const tarjeta = document.getElementById("tarjeta-calendario");
+        if (!banda || !tarjeta) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+
+        /*
+           Las flores entran creciendo desde chiquitas hasta su tamaño y
+           después quedan meciéndose despacio, como si estuvieran vivas.
+
+           Se anima la CAJA y no la imagen: la imagen lleva el volteo
+           (scaleX/scaleY en -1) y GSAP lee ese menos como media vuelta, así
+           que si la animara a ella el ramo giraría como un trompo.
+        */
+        const flores = document.querySelector<HTMLElement>(
+            "#calendario .caja-flores",
+        );
+        if (flores) {
+            gsap.fromTo(
+                flores,
+                { scale: 0.45, x: 70, opacity: 0 },
+                {
+                    scale: 1,
+                    x: 0,
+                    opacity: 1,
+                    duration: 1.5,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: flores,
+                        start: "top 95%",
+                        toggleActions: "play none none reset",
+                    },
+                    onComplete: () => {
+                        gsap.to(flores, {
+                            rotation: 1.6,
+                            duration: 5,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: "sine.inOut",
+                        });
+                    },
+                },
+            );
+        }
+
+        gsap.fromTo(
+            banda.querySelector(".titulo"),
+            { opacity: 0, y: 16 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: banda,
+                    start: "top 85%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        gsap.fromTo(
+            tarjeta,
+            { opacity: 0, y: 22 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: tarjeta,
+                    start: "top 88%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        // El corazón del día de la boda late apenas, para que se note
+        const marca = tarjeta.querySelector(".marca");
+        if (marca) {
+            gsap.fromTo(
+                marca,
+                { scale: 0.7, opacity: 0 },
+                {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.8,
+                    delay: 0.6,
+                    ease: "back.out(2)",
+                    transformOrigin: "center",
+                    scrollTrigger: {
+                        trigger: tarjeta,
+                        start: "top 88%",
+                        toggleActions: "play none none reset",
+                    },
+                },
+            );
+        }
+    });
+</script>
