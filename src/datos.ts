@@ -24,6 +24,8 @@ export const fechaTitulo = { dia: "Sábado", numero: "17", mes: "de octubre" };
 export const fechaPortada = {
     dia: "Sábado",
     numero: "17",
+    // Los dos días de la fiesta (sábado y domingo), para la tarjeta de la portada.
+    numeros: "17 - 18",
     mes: "Octubre",
     anio: "2026",
     hora: "11:30",
@@ -57,7 +59,7 @@ export const padres = {
 // Los padrinos, por grupo, en el orden de información.txt.
 export const padrinos = [
     { grupo: "Padrinos de Religión y Civil", nombres: ["Deybid Poma Balboa", "Zoraida Mamani Quispe"] },
-    { grupo: "Padrinos de Torta", nombres: ["Roberio Huanca Mamani", "Rosario Salazar de Huanaco"] },
+    { grupo: "Padrinos de Torta", nombres: ["Roberto Huanaco Mamani", "Rosario Salazar de Huanaco"] },
     { grupo: "Padrinos de Conteo", nombres: ["Edwin Aguilar Mayta", "Nilda Choque de Aguilar"] },
     { grupo: "Padrinos de Sorpresa", nombres: ["Jhonny Choque Tudela", "Gudelia Vargas Quispe"] },
 ];
@@ -111,6 +113,7 @@ export const cartelera = [
     { dia: "sabado", nombre: "Helena", detalle: "Agrupación", imagen: "/imagenes/grupos/7-agrupacion-helena.webp", ancho: 271, alto: 211 },
     { dia: "sabado", nombre: "Grupo Yoga", detalle: "De Tarija", imagen: "/imagenes/grupos/9-grupo-yoga-de-tarija.webp", ancho: 272, alto: 171 },
     { dia: "sabado", nombre: "Yamali", detalle: "", imagen: "/imagenes/grupos/8-yamali.webp", ancho: 265, alto: 130 },
+    { dia: "sabado", nombre: "Vicente Fernández", detalle: "De Yo me llamo", imagen: "/imagenes/grupos/10-mariachi-vicente-fernandez.webp", ancho: 560, alto: 343 },
     { dia: "domingo", nombre: "Eclipse", detalle: "Eduardo Balderrama", imagen: "/imagenes/grupos/1-eclipse.webp", ancho: 268, alto: 385 },
     { dia: "domingo", nombre: "La Banda de Lechuga", detalle: "", imagen: "/imagenes/grupos/4-labandadelechuga.webp", ancho: 268, alto: 383 },
     { dia: "domingo", nombre: "Los Internacionales Iberia", detalle: "El orgullo de América", imagen: "/imagenes/grupos/2-iberia.webp", ancho: 275, alto: 388 },
@@ -122,9 +125,8 @@ export const cartelera = [
 // El rubro de Trebmil se dedujo del fondo de su logo (un baño): confirmar.
 export const producciones = [
     { rubro: "Sonido", nombre: "Sonido Zeta", imagen: "/imagenes/produccion/1-sonido-zeta.webp" },
-    { rubro: "Producción", nombre: "Aguilar Producciones", imagen: "/imagenes/produccion/2-aguilar-producciones.webp" },
-    { rubro: "Producción", nombre: "Gran Faraón Producciones", imagen: "/imagenes/produccion/3-gran-faraon.webp" },
     { rubro: "Banda musical", nombre: "Intergaláctica Poopó Originales", imagen: "/imagenes/produccion/4-intergalactica-poopo.webp" },
+    { rubro: "Producción", nombre: "Gran Faraón Producciones", imagen: "/imagenes/produccion/3-gran-faraon.webp" },
     { rubro: "Decoración", nombre: "RS Elegant Events", imagen: "/imagenes/produccion/5-rs-elegant-events.webp" },
     { rubro: "Seguridad", nombre: "Laser", imagen: "/imagenes/produccion/6-seguridad-laser.webp" },
     { rubro: "Servicios sanitarios", nombre: "Trebmil Brazil", imagen: "/imagenes/produccion/7-trebmil.webp" },

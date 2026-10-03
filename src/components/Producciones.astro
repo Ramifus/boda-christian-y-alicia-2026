@@ -3,8 +3,8 @@
 // "Producciones y servicios": quienes hacen posible la fiesta (sonido,
 // producción, decoración, seguridad...). Página clara, como las de la
 // ceremonia: flores arriba y abajo y una tarjeta crema por empresa, con su
-// rubro arriba, el logo en un cuadro con doble filete dorado y el nombre
-// en cursiva. Cada logo tiene un destello de luz que lo cruza de vez en
+// rubro arriba y el logo en un cuadro con doble filete dorado (el nombre
+// queda solo en el texto alternativo: el logo ya lo dice). Cada logo tiene un destello de luz que lo cruza de vez en
 // cuando, cada uno a su tiempo.
 // Las empresas salen de `producciones` en datos.ts.
 import { producciones } from "../datos";
@@ -12,7 +12,6 @@ import { producciones } from "../datos";
 
 <section id="producciones" class="producciones">
     <img src="/imagenes/florarriba.webp" alt="" aria-hidden="true" width="828" height="276" class="flor flor-arriba" />
-    <img src="/imagenes/florabajo.webp" alt="" aria-hidden="true" width="828" height="294" class="flor flor-abajo" />
 
     <div class="contenido">
         <header class="placa encabezado revelar">
@@ -40,7 +39,6 @@ import { producciones } from "../datos";
                             <img src={p.imagen} alt={p.nombre} loading="lazy" width="480" height="480" />
                             <span class="destello" aria-hidden="true" />
                         </div>
-                        <h3 class="nombre">{p.nombre}</h3>
                     </li>
                 ))
             }
@@ -48,6 +46,10 @@ import { producciones } from "../datos";
 
         <p class="gracias revelar">¡Gracias por ser parte de nuestro gran día!</p>
     </div>
+
+    <!-- Al final del contenido (no pegada a la pantalla): la página es más
+         larga que el celular y se baja con el dedo. -->
+    <img src="/imagenes/florabajo.webp" alt="" aria-hidden="true" width="828" height="294" class="flor flor-abajo" />
 </section>
 
 <style>
@@ -74,7 +76,10 @@ import { producciones } from "../datos";
     }
 
     .flor-abajo {
-        bottom: 0;
+        position: relative;
+        display: block;
+        width: calc(100% + 2.2rem);
+        margin: 0.5rem -1.1rem -6rem;
         opacity: 0.9;
     }
 
@@ -226,16 +231,6 @@ import { producciones } from "../datos";
     @keyframes destellar {
         0%, 70% { transform: translateX(-120%); }
         100% { transform: translateX(120%); }
-    }
-
-    .nombre {
-        margin-top: 0.65rem;
-        font-family: var(--font-titulo);
-        font-weight: 400;
-        font-size: 1.45rem;
-        line-height: 1.1;
-        text-wrap: balance;
-        color: var(--color-primero);
     }
 
     .gracias {

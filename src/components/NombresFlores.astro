@@ -34,7 +34,7 @@ import { novios, fechaPortada } from "../datos";
         <div class="tarjeta-fecha entrada-portada">
             <p class="columna lado">{fechaPortada.dia}</p>
             <div class="columna centro">
-                <p class="numero">{fechaPortada.numero}</p>
+                <p class="numero">{fechaPortada.numeros}</p>
                 <p class="mes">{fechaPortada.mes}<br />{fechaPortada.anio}</p>
             </div>
             <p class="columna lado">{fechaPortada.hora}<br />{fechaPortada.periodo}</p>
@@ -206,12 +206,14 @@ import { novios, fechaPortada } from "../datos";
         border-right: 1px solid #c3d5b6;
     }
 
+    /* Los dos días, en Bodoni (recta), como el monograma del sobre. */
     .numero {
-        font-family: "Tangerine", cursive;
+        font-family: var(--font-iniciales);
         font-weight: 400;
-        font-size: 4.5rem;
-        line-height: 1;
-        letter-spacing: 0;
+        font-size: 2.1rem;
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
         color: var(--color-primero);
     }
 
