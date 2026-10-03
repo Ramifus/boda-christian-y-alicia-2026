@@ -3,8 +3,8 @@
 // "Producciones y servicios": quienes hacen posible la fiesta (sonido,
 // producción, decoración, seguridad...). Página clara, como las de la
 // ceremonia: flores arriba y abajo y una tarjeta crema por empresa, con su
-// rubro arriba y el logo en un cuadro con doble filete dorado (el nombre
-// queda solo en el texto alternativo: el logo ya lo dice). Cada logo tiene un destello de luz que lo cruza de vez en
+// rubro arriba (si tiene) y el logo en un cuadro con doble filete dorado
+// (el nombre queda en el texto alternativo: el logo ya lo dice). Cada logo tiene un destello de luz que lo cruza de vez en
 // cuando, cada uno a su tiempo.
 // Las empresas salen de `producciones` en datos.ts.
 import { producciones } from "../datos";
@@ -34,7 +34,7 @@ import { producciones } from "../datos";
             {
                 producciones.map((p, i) => (
                     <li class="placa tarjeta revelar" style={`--orden:${i}`}>
-                        <p class="rubro">{p.rubro}</p>
+                        {p.rubro && <p class="rubro">{p.rubro}</p>}
                         <div class="logo">
                             <img src={p.imagen} alt={p.nombre} loading="lazy" width="480" height="480" />
                             <span class="destello" aria-hidden="true" />
@@ -179,7 +179,9 @@ import { producciones } from "../datos";
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0.85rem 0.75rem 0.9rem;
+        /* Sin rubro (Trebmil), el logo queda centrado en el alto. */
+        justify-content: center;
+        padding: 0.85rem 0.75rem;
         border-radius: 1.25rem;
         box-shadow: 0 10px 22px -16px rgba(47, 69, 54, 0.45);
     }
@@ -188,6 +190,7 @@ import { producciones } from "../datos";
         min-height: 2.2em;
         display: flex;
         align-items: center;
+        margin-bottom: 0.45rem;
         font-family: var(--font-texto);
         font-weight: 700;
         font-size: 0.58rem;
@@ -202,7 +205,6 @@ import { producciones } from "../datos";
         position: relative;
         width: 82%;
         aspect-ratio: 1;
-        margin-top: 0.45rem;
         overflow: hidden;
         border-radius: 1rem;
         box-shadow:

@@ -90,12 +90,25 @@ export const recepcion = {
     fotoAlto: 423,
 };
 
+// El conteo de regalos: el domingo, en el mismo lugar de la recepción.
+export const conteo = {
+    dia: "Domingo",
+    numero: "18",
+    mes: "de Octubre",
+    titulo: "Conteo de Regalos",
+    hora: "15:00",
+    periodo: "PM",
+    lugar: recepcion.lugar,
+    direccion: recepcion.direccion,
+    mapa: recepcion.mapa,
+};
+
 // El itinerario, como viene en información.txt: el sábado la ceremonia y
-// la recepción; el domingo el conteo de regalos (sin hora todavía).
+// la recepción; el domingo el conteo de regalos.
 export const itinerario = [
     { momento: "Ceremonia Religiosa", hora: `Sábado 17 · ${ceremonia.hora}`, icono: "/iconos/iglesia.png" },
     { momento: "Recepción Social", hora: `Sábado 17 · ${recepcion.hora}`, icono: "/iconos/recepcion.png" },
-    { momento: "Conteo de Regalos", hora: "Domingo 18", icono: "/iconos/lluvia-sobre.png" },
+    { momento: "Conteo de Regalos", hora: `Domingo 18 · ${conteo.hora}`, icono: "/iconos/lluvia-sobre.png" },
 ];
 
 // Las fotos de la galería (el carrusel), en el orden en que se muestran.
@@ -122,14 +135,14 @@ export const cartelera = [
 ];
 
 // Producciones y servicios de la fiesta, en el orden de sus imágenes.
-// El rubro de Trebmil se dedujo del fondo de su logo (un baño): confirmar.
+// Con rubro "" la tarjeta muestra solo el logo (así va Trebmil).
 export const producciones = [
     { rubro: "Sonido", nombre: "Sonido Zeta", imagen: "/imagenes/produccion/1-sonido-zeta.webp" },
     { rubro: "Banda musical", nombre: "Intergaláctica Poopó Originales", imagen: "/imagenes/produccion/4-intergalactica-poopo.webp" },
     { rubro: "Producción", nombre: "Gran Faraón Producciones", imagen: "/imagenes/produccion/3-gran-faraon.webp" },
     { rubro: "Decoración", nombre: "RS Elegant Events", imagen: "/imagenes/produccion/5-rs-elegant-events.webp" },
     { rubro: "Seguridad", nombre: "Laser", imagen: "/imagenes/produccion/6-seguridad-laser.webp" },
-    { rubro: "Servicios sanitarios", nombre: "Trebmil Brazil", imagen: "/imagenes/produccion/7-trebmil.webp" },
+    { rubro: "", nombre: "Trebmil Brazil", imagen: "/imagenes/produccion/7-trebmil.webp" },
 ];
 
 /*
