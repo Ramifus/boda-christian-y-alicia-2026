@@ -1,0 +1,280 @@
+---
+// src/components/Menu.astro
+// La barra de abajo, como en el modelo: al centro el botón con el nombre de
+// la página actual (al tocarlo se abre la lista de páginas) y a la derecha
+// el contador "01 / 10". La música va a la izquierda (BotonMusica).
+// Arriba, dos flechitas: la de la izquierda vuelve a la página anterior y
+// la de la derecha pasa a la siguiente.
+//
+// La lista se arma sola con las páginas que existen: si una sección no se
+// dibuja (la galería vacía, el pase en el index), no aparece. Acá solo va
+// el nombre que se muestra para cada id.
+const nombres: Record<string, string> = {
+    inicio: "Inicio",
+    "cuenta-regresiva": "Faltan",
+    padres: "Historia",
+    padrinos: "Padrinos",
+    "padrinos-2": "Padrinos",
+    ceremonia: "Iglesia",
+    recepcion: "Recepción",
+    conteo: "Conteo",
+    itinerario: "Itinerario",
+    galeria: "Fotos",
+    cartelera: "Cartelera",
+    producciones: "Servicios",
+    pase: "Tu pase",
+    despedida: "Te esperamos",
+};
+---
+
+<button type="button" class="flecha-pagina flecha-anterior oculta" data-paso="-1" aria-label="Página anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+</button>
+<button type="button" class="flecha-pagina flecha-siguiente" data-paso="1" aria-label="Página siguiente">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+</button>
+
+<div class="barra-inferior" data-nombres={JSON.stringify(nombres)}>
+    <div class="selector">
+        <nav id="menu-panel" class="panel" aria-label="Páginas">
+            <ul id="menu-lista"></ul>
+        </nav>
+
+        <button id="menu-boton" type="button" class="pastilla" aria-expanded="false" aria-controls="menu-panel">
+            <svg class="casa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 3.2 2.8 11h2.7v9h5v-5.5h3V20h5v-9h2.7L12 3.2Z"></path>
+            </svg>
+            <span id="menu-actual">Inicio</span>
+            <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                <path d="M6 15l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+    </div>
+
+    <p class="contador" aria-live="polite">
+        <span id="pagina-actual">01</span> <span class="barrita">/</span> <span id="pagina-total">01</span>
+    </p>
+</div>
+
+<style>
+    /* ── Las flechitas de arriba ──────────────────────────── */
+    .flecha-pagina {
+        position: fixed;
+        top: 0.9rem;
+        z-index: 40;
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: rgba(251, 248, 240, 0.88);
+        border: 1px solid rgba(195, 213, 182, 0.8);
+        box-shadow: 0 4px 12px -6px rgba(47, 69, 54, 0.4);
+        backdrop-filter: blur(6px);
+        color: var(--color-segundo);
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .flecha-pagina svg {
+        width: 1.1rem;
+    }
+
+    /* Pegadas a los bordes de la columna, no de la pantalla. */
+    .flecha-anterior {
+        left: max(0.9rem, calc(50% - 215px + 0.9rem));
+    }
+
+    .flecha-siguiente {
+        right: max(0.9rem, calc(50% - 215px + 0.9rem));
+    }
+
+    .flecha-pagina.oculta {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .barra-inferior {
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 40;
+        width: 100%;
+        max-width: 430px;
+        padding: 0 1rem;
+        pointer-events: none;
+    }
+
+    .selector {
+        position: relative;
+        width: max-content;
+        margin: 0 auto;
+        pointer-events: auto;
+    }
+
+    .pastilla {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.6rem 1rem;
+        border-radius: 9999px;
+        background: rgba(251, 248, 240, 0.92);
+        border: 1px solid rgba(195, 213, 182, 0.7);
+        box-shadow: 0 6px 16px -8px rgba(47, 69, 54, 0.4);
+        backdrop-filter: blur(6px);
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.66rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--color-primero);
+    }
+
+    .casa {
+        width: 0.95rem;
+        color: var(--color-segundo);
+    }
+
+    .flecha {
+        width: 0.8rem;
+        transition: transform 0.3s;
+    }
+
+    .barra-inferior.abierto .flecha {
+        transform: rotate(180deg);
+    }
+
+    .panel {
+        position: absolute;
+        bottom: calc(100% + 0.6rem);
+        left: 50%;
+        min-width: 13rem;
+        padding: 0.5rem;
+        border-radius: 1.2rem;
+        background: rgba(251, 248, 240, 0.97);
+        border: 1px solid #c3d5b6;
+        box-shadow: 0 16px 34px -14px rgba(47, 69, 54, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transform: translate(-50%, 6px);
+        transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+    }
+
+    .barra-inferior.abierto .panel {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
+    }
+
+    .panel :global(button) {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        padding: 0.55rem 0.85rem;
+        border-radius: 0.8rem;
+        font-family: var(--font-texto);
+        font-size: 0.8rem;
+        color: var(--color-primero);
+        text-align: left;
+    }
+
+    .panel :global(button:hover),
+    .panel :global(button[aria-current="true"]) {
+        background: rgba(195, 213, 182, 0.45);
+    }
+
+    .panel :global(.num) {
+        color: var(--color-oro-oscuro);
+        font-size: 0.7rem;
+    }
+
+    .contador {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.45rem 0.8rem;
+        border-radius: 9999px;
+        background: rgba(251, 248, 240, 0.92);
+        border: 1px solid rgba(195, 213, 182, 0.7);
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.66rem;
+        letter-spacing: 0.12em;
+        color: var(--color-primero);
+        pointer-events: auto;
+    }
+
+    .barrita {
+        color: var(--color-oro);
+    }
+</style>
+
+<script>
+    const barra = document.querySelector<HTMLElement>(".barra-inferior");
+    const boton = document.getElementById("menu-boton");
+    const lista = document.getElementById("menu-lista");
+    const actual = document.getElementById("menu-actual");
+    const numActual = document.getElementById("pagina-actual");
+    const numTotal = document.getElementById("pagina-total");
+    const nombres: Record<string, string> = JSON.parse(barra?.dataset.nombres ?? "{}");
+    const dos = (n: number) => String(n).padStart(2, "0");
+
+    function cerrar() {
+        barra?.classList.remove("abierto");
+        boton?.setAttribute("aria-expanded", "false");
+    }
+
+    boton?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const abierto = barra?.classList.toggle("abierto");
+        boton.setAttribute("aria-expanded", String(Boolean(abierto)));
+    });
+
+    document.addEventListener("click", cerrar);
+
+    // Invitacion.astro avisa cuántas páginas hay y cuál se está viendo.
+    window.addEventListener("paginas-listas", (e) => {
+        const ids: string[] = (e as CustomEvent).detail;
+        if (numTotal) numTotal.textContent = dos(ids.length);
+        if (!lista) return;
+        lista.innerHTML = "";
+        ids.forEach((id, i) => {
+            const li = document.createElement("li");
+            const b = document.createElement("button");
+            b.type = "button";
+            b.dataset.ir = id;
+            b.innerHTML = `<span>${nombres[id] ?? id}</span><span class="num">${dos(i + 1)}</span>`;
+            li.appendChild(b);
+            lista.appendChild(li);
+        });
+    });
+
+    // Las flechitas piden pasar de página; Invitacion.astro hace el paso.
+    document.querySelectorAll<HTMLElement>(".flecha-pagina").forEach((f) => {
+        f.addEventListener("click", () => {
+            window.dispatchEvent(new CustomEvent("pagina-paso", { detail: Number(f.dataset.paso) }));
+        });
+    });
+
+    let total = 1;
+    window.addEventListener("paginas-listas", (e) => {
+        total = (e as CustomEvent).detail.length;
+    });
+
+    window.addEventListener("pagina-cambio", (e) => {
+        const { id, indice } = (e as CustomEvent).detail;
+        document.querySelector(".flecha-anterior")?.classList.toggle("oculta", indice === 0);
+        document.querySelector(".flecha-siguiente")?.classList.toggle("oculta", indice >= total - 1);
+        if (actual) actual.textContent = nombres[id] ?? id;
+        if (numActual) numActual.textContent = dos(indice + 1);
+        lista?.querySelectorAll("button").forEach((b) => {
+            b.setAttribute("aria-current", String(b.dataset.ir === id));
+        });
+    });
+</script>

@@ -1,0 +1,10 @@
+---
+// src/components/CeremoniaReligiosa.astro
+// La página de la ceremonia. El diseño está en Lugar.astro (el mismo de la
+// recepción); los datos, en `ceremonia` de datos.ts. Los padrinos van en
+// su propia página (Padrinos.astro).
+import Lugar from "./Lugar.astro";
+import { ceremonia } from "../datos";
+---
+
+<Lugar id="ceremonia" evento={ceremonia} />

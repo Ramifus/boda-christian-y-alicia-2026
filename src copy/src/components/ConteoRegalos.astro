@@ -1,0 +1,279 @@
+---
+// src/components/ConteoRegalos.astro
+// El domingo: el conteo de regalos. Mismo estilo claro que las demás
+// páginas (flores, placa con el día), pero sin foto: una tarjeta con el
+// ícono de regalo, el título, la hora grande, el lugar, la dirección y
+// el botón "Cómo llegar". Los datos salen de `conteo` en datos.ts.
+import { conteo } from "../datos";
+---
+
+<section id="conteo" class="conteo">
+    <img src="/imagenes/florarriba.webp" alt="" aria-hidden="true" width="828" height="276" class="flor flor-arriba" />
+    <img src="/imagenes/florabajo.webp" alt="" aria-hidden="true" width="828" height="294" class="flor flor-abajo" />
+
+    <div class="contenido">
+        <h2 class="placa encabezado revelar">
+            {conteo.dia} {conteo.numero} {conteo.mes}
+        </h2>
+
+        <div class="divisor revelar" aria-hidden="true">
+            <span class="linea linea-izq"></span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+                <path d="M8 2.5 L11 8 L8 13.5 L5 8 Z"></path>
+                <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"></circle>
+            </svg>
+            <span class="linea linea-der"></span>
+        </div>
+
+        <p class="invitacion revelar">Te esperamos también el domingo para</p>
+
+        <article class="placa tarjeta revelar">
+            <span class="regalo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3.5" y="9" width="17" height="11.5" rx="1.2"></rect>
+                    <path d="M2.5 9h19v-2.2a.8.8 0 0 0-.8-.8H3.3a.8.8 0 0 0-.8.8V9Z"></path>
+                    <path d="M12 6v14.5"></path>
+                    <path d="M12 6C10.5 3.2 7.2 3 6.8 4.7 6.4 6.3 9.5 6.6 12 6Z"></path>
+                    <path d="M12 6c1.5-2.8 4.8-3 5.2-1.3.4 1.6-2.7 1.9-5.2 1.3Z"></path>
+                </svg>
+            </span>
+
+            <h3 class="titulo-conteo">{conteo.titulo}</h3>
+
+            <p class="hora">
+                <span class="hora-numero">{conteo.hora}</span>
+                <span class="hora-periodo">{conteo.periodo}</span>
+            </p>
+
+            <span class="raya" aria-hidden="true"></span>
+
+            <p class="lugar">{conteo.lugar}</p>
+            <p class="direccion">{conteo.direccion}</p>
+
+            <a href={conteo.mapa} target="_blank" rel="noopener" class="como-llegar">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M21 3 3 10.5l7.2 2.3L12.5 20 21 3Z"></path>
+                </svg>
+                Cómo llegar
+            </a>
+        </article>
+    </div>
+</section>
+
+<style>
+    .conteo {
+        position: relative;
+        text-align: center;
+        /* Arriba deja ver la flor; el contenido arranca debajo. */
+        padding: 3.75rem 1.25rem 0;
+        background-image:
+            radial-gradient(ellipse at 50% 45%, rgba(241, 236, 221, 0.9) 0%, rgba(251, 248, 240, 0) 70%),
+            linear-gradient(#fbf8f0, #fbf8f0);
+    }
+
+    .flor {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+    }
+
+    .flor-arriba {
+        top: 0;
+    }
+
+    .flor-abajo {
+        bottom: 0;
+        opacity: 0.9;
+    }
+
+    .contenido {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* La placa crema translúcida que va detrás de cada bloque. */
+    .placa {
+        border-radius: 1rem;
+        background: rgba(251, 248, 240, 0.8);
+        border: 1px solid rgba(195, 213, 182, 0.45);
+        box-shadow: 0 1px 3px rgba(47, 69, 54, 0.06);
+    }
+
+    .encabezado {
+        margin-top: 0.4rem;
+        padding: 0.55rem 1.4rem 0.6rem;
+        font-family: var(--font-titulo);
+        font-weight: 400;
+        font-size: 1.875rem;
+        line-height: 1.2;
+        color: var(--color-oro-oscuro);
+    }
+
+    .divisor {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 20rem;
+        margin-top: 1rem;
+        color: var(--color-segundo);
+    }
+
+    .divisor svg {
+        width: 1rem;
+        flex: none;
+    }
+
+    .linea {
+        flex: 1;
+        height: 1px;
+    }
+
+    .linea-izq {
+        background: linear-gradient(to right, transparent, #c3d5b6);
+    }
+
+    .linea-der {
+        background: linear-gradient(to left, transparent, #c3d5b6);
+    }
+
+    .invitacion {
+        margin-top: 1.2rem;
+        max-width: 20rem;
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.35rem;
+        line-height: 1.4;
+        color: var(--color-segundo);
+    }
+
+    /* ── La tarjeta ───────────────────────────────────────── */
+    .tarjeta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 1.2rem;
+        padding: 1.6rem 1.25rem 1.4rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 12px 26px -16px rgba(47, 69, 54, 0.45);
+    }
+
+    /* El regalo en un círculo con filete dorado; flota despacio. */
+    .regalo {
+        display: grid;
+        place-items: center;
+        width: 4.2rem;
+        height: 4.2rem;
+        border-radius: 50%;
+        background: #f1ecdd;
+        color: var(--color-segundo);
+        box-shadow:
+            0 0 0 2px #fbf8f0,
+            0 0 0 3px rgba(191, 160, 106, 0.7);
+        animation: flotar 4s ease-in-out infinite;
+    }
+
+    .regalo svg {
+        width: 2rem;
+    }
+
+    .titulo-conteo {
+        margin-top: 1rem;
+        font-family: var(--font-titulo);
+        font-weight: 400;
+        font-size: 2.5rem;
+        line-height: 1.1;
+        color: var(--color-oro-oscuro);
+    }
+
+    .hora {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        margin-top: 0.4rem;
+        color: var(--color-segundo);
+    }
+
+    .hora-numero {
+        font-family: "Tangerine", cursive;
+        font-size: 3.2rem;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .hora-periodo {
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+    }
+
+    .raya {
+        display: block;
+        width: 4rem;
+        height: 1px;
+        margin-top: 0.9rem;
+        background: #c3d5b6;
+    }
+
+    .lugar {
+        margin-top: 0.9rem;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-primero);
+    }
+
+    .direccion {
+        margin-top: 0.5rem;
+        font-family: var(--font-texto);
+        font-size: 0.875rem;
+        line-height: 1.6;
+        text-transform: uppercase;
+        text-wrap: balance;
+        color: color-mix(in srgb, var(--color-primero) 75%, transparent);
+    }
+
+    .como-llegar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        min-height: 3rem;
+        margin-top: 1.3rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        background: var(--color-segundo);
+        color: #fbf8f0;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        box-shadow: 0 8px 18px -8px rgba(87, 118, 79, 0.7);
+        transition: background-color 0.25s;
+    }
+
+    .como-llegar:hover {
+        background: var(--color-primero);
+    }
+
+    .como-llegar svg {
+        width: 0.85rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .regalo {
+            animation: none;
+        }
+    }
+</style>

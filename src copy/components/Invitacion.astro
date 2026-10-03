@@ -58,9 +58,8 @@ const { pases = 0 } = Astro.props;
     /*
        Las páginas van una al lado de la otra y se pasan deslizando de
        costado, como en el modelo: la siguiente entra desde la derecha.
-       Cada sección es una página del alto exacto de la pantalla y no se
-       baja con el dedo: su contenido se ajusta solo para entrar entero
-       (ver ajustarPaginas, más abajo).
+       Cada sección es una página del alto de la pantalla; si su contenido
+       no entra, se baja con el dedo adentro de esa misma página.
     */
     #contenido-principal {
         display: flex;
@@ -78,35 +77,24 @@ const { pases = 0 } = Astro.props;
     }
 
     #contenido-principal > section {
-        display: block;
         flex: 0 0 100%;
         height: 100svh;
         min-height: 0;
-        overflow: hidden;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-    }
-
-    #contenido-principal > section > .contenido {
-        transform-origin: top center;
-    }
-
-    /*
-       La cartelera y producciones no se achican: son más largas que la
-       pantalla y se bajan con el dedo, con su flor de abajo al final.
-    */
-    #contenido-principal > #cartelera,
-    #contenido-principal > #producciones {
         overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior-y: contain;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
         scrollbar-width: none;
-        /* Lugar para la barra de abajo, que flota encima. */
+    }
+
+    /* Lugar para la barra de abajo, que flota encima. La de nombres y
+       flores ya deja el suyo para la flor de abajo. */
+    #contenido-principal > section:not(#inicio) {
         padding-bottom: 6rem;
     }
 
-    #contenido-principal > #cartelera::-webkit-scrollbar,
-    #contenido-principal > #producciones::-webkit-scrollbar {
+    #contenido-principal > section::-webkit-scrollbar {
         display: none;
     }
 </style>
@@ -121,40 +109,6 @@ const { pases = 0 } = Astro.props;
 
     iniciarAnimaciones(contenedor);
 
-    /*
-       Que cada página entre entera en cualquier celular, largo o corto.
-       El lugar libre va desde el relleno de arriba (donde termina la flor)
-       hasta encima de la flor de abajo y de la barra. Si el contenido no
-       entra, se achica parejo (letra, fotos y tarjetas en la misma
-       proporción: nada se deforma); si sobra lugar, se centra.
-    */
-    const BARRA = 88; // la barra de abajo (música, páginas, contador)
-    // Estas se dejan largas, con desplazamiento hacia abajo (ver el CSS).
-    const CON_DESPLAZAMIENTO = ["cartelera", "producciones"];
-
-    function ajustarPaginas() {
-        paginas.forEach((pagina) => {
-            if (CON_DESPLAZAMIENTO.includes(pagina.id)) return;
-            const contenido = pagina.querySelector<HTMLElement>(":scope > .contenido");
-            if (!contenido) return;
-            contenido.style.transform = "";
-
-            const arriba = parseFloat(getComputedStyle(pagina).paddingTop) || 0;
-            const flor = pagina.querySelector<HTMLElement>(":scope > .flor-abajo");
-            const abajo = Math.max(BARRA, flor ? flor.offsetHeight * 0.8 : 0);
-            const lugar = pagina.clientHeight - arriba - abajo;
-            const alto = contenido.offsetHeight;
-            if (lugar <= 0 || alto <= 0) return;
-
-            const escala = Math.min(1, lugar / alto);
-            const centrado = Math.max(0, (lugar - alto * escala) / 2);
-            contenido.style.transform = `translateY(${centrado}px) scale(${escala})`;
-        });
-    }
-
-    ajustarPaginas();
-    window.addEventListener("load", ajustarPaginas);
-    document.fonts?.ready.then(ajustarPaginas);
 
     function irA(i: number) {
         const destino = Math.max(0, Math.min(paginas.length - 1, i));
@@ -203,7 +157,7 @@ const { pases = 0 } = Astro.props;
 
     /*
        En computadora: la rueda del mouse pasa de página (abajo = siguiente,
-       arriba = anterior). En las páginas largas (cartelera, producciones)
+       arriba = anterior). Si la página es más larga que la pantalla,
        primero baja su contenido y recién en el borde pasa de página.
        La pausa evita que un solo giro salte varias páginas.
     */
@@ -216,11 +170,9 @@ const { pases = 0 } = Astro.props;
 
             const pagina = paginas[indice];
             const bajando = e.deltaY > 0;
-            if (CON_DESPLAZAMIENTO.includes(pagina.id)) {
-                const puedeBajar = pagina.scrollTop + pagina.clientHeight < pagina.scrollHeight - 2;
-                const puedeSubir = pagina.scrollTop > 2;
-                if ((bajando && puedeBajar) || (!bajando && puedeSubir)) return;
-            }
+            const puedeBajar = pagina.scrollTop + pagina.clientHeight < pagina.scrollHeight - 2;
+            const puedeSubir = pagina.scrollTop > 2;
+            if ((bajando && puedeBajar) || (!bajando && puedeSubir)) return;
 
             e.preventDefault();
             if (pausaRueda || Math.abs(e.deltaY) < 8) return;
@@ -237,10 +189,8 @@ const { pases = 0 } = Astro.props;
         if (e.key === "ArrowLeft") irA(indice - 1);
     });
 
-    // Al cambiar el tamaño de la ventana (o girar el celular), se reajusta
-    // el contenido y se queda en la misma página.
+    // Al cambiar el tamaño de la ventana, se queda en la misma página.
     window.addEventListener("resize", () => {
-        ajustarPaginas();
         contenedor.style.scrollBehavior = "auto";
         irA(indice);
         contenedor.style.scrollBehavior = "";

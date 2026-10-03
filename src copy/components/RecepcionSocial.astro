@@ -1,0 +1,9 @@
+---
+// src/components/RecepcionSocial.astro
+// La página de la recepción. El diseño está en Lugar.astro (el mismo de la
+// ceremonia); los datos, en `recepcion` de datos.ts.
+import Lugar from "./Lugar.astro";
+import { recepcion } from "../datos";
+---
+
+<Lugar id="recepcion" evento={recepcion} />

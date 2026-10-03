@@ -1,0 +1,62 @@
+---
+// src/components/Pase.astro
+// La tarjeta del pase. Solo se dibuja en /pase1, /pase2...; en el index
+// llega 0 y no aparece.
+import { textoPase, nombresJuntos } from "../datos";
+
+export interface Props {
+    pases: number;
+}
+const { pases } = Astro.props;
+---
+
+{
+    pases > 0 && (
+        <section id="pase" class="seccion">
+            <div class="pase revelar">
+                <p class="antetitulo">Hemos reservado</p>
+                <p class="cantidad">{pases}</p>
+                <p class="texto-pase">{textoPase(pases)}</p>
+                <p class="firma">{nombresJuntos}</p>
+            </div>
+        </section>
+    )
+}
+
+<style>
+    .pase {
+        padding: 2.2rem 1.5rem;
+        border-radius: 1.5rem;
+        background: var(--color-primero);
+        background-image: linear-gradient(160deg, #3f5c46, #2f4536);
+        color: #fbf8f0;
+        box-shadow: 0 16px 30px -16px rgba(47, 69, 54, 0.8);
+        outline: 1px solid rgba(230, 208, 160, 0.6);
+        outline-offset: -10px;
+    }
+
+    .pase .antetitulo {
+        color: #e6d0a0;
+    }
+
+    .cantidad {
+        margin-top: 0.6rem;
+        font-family: var(--font-nombre);
+        font-size: 3.4rem;
+        line-height: 1;
+        color: #e6d0a0;
+    }
+
+    .texto-pase {
+        margin-top: 0.5rem;
+        font-family: var(--font-nombre);
+        font-size: 1.05rem;
+    }
+
+    .firma {
+        margin-top: 1rem;
+        font-family: var(--font-titulo);
+        font-size: 2rem;
+        color: #e6d0a0;
+    }
+</style>

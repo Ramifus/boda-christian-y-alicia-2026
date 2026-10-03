@@ -1,0 +1,208 @@
+---
+// src/components/Despedida.astro
+// El cierre de la invitación: "¡Te esperamos!", unas palabras de
+// agradecimiento, el sello dorado del sobre como firma, los nombres y la
+// fecha. Flores arriba y abajo, como el resto de las páginas.
+import { novios, fechaLarga } from "../datos";
+---
+
+<section id="despedida" class="despedida">
+    <img src="/imagenes/florarriba.webp" alt="" aria-hidden="true" width="828" height="276" class="flor flor-arriba" />
+    <img src="/imagenes/florabajo.webp" alt="" aria-hidden="true" width="828" height="294" class="flor flor-abajo" />
+
+    <div class="contenido">
+        <header class="placa encabezado revelar">
+            <p class="antes">Con todo nuestro amor</p>
+            <h2 class="titulo-despedida">¡Te esperamos!</h2>
+        </header>
+
+        <div class="divisor revelar" aria-hidden="true">
+            <span class="linea linea-izq"></span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+                <path d="M8 2.5 L11 8 L8 13.5 L5 8 Z"></path>
+                <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"></circle>
+            </svg>
+            <span class="linea linea-der"></span>
+        </div>
+
+        <div class="placa mensaje revelar">
+            <p>
+                Tu presencia es el regalo más bonito que podemos recibir. Gracias por acompañarnos a dar este paso
+                y por ser parte de nuestra historia.
+            </p>
+            <p class="destacado">Será un honor compartir este día contigo.</p>
+        </div>
+
+        <img src="/imagenes/boton.webp" alt="" aria-hidden="true" width="320" height="318" class="sello revelar" />
+
+        <p class="nombres revelar">
+            <span>{novios.el}</span>
+            <span class="y">&</span>
+            <span>{novios.ella}</span>
+        </p>
+
+        <p class="fecha revelar">{fechaLarga}</p>
+    </div>
+</section>
+
+<style>
+    .despedida {
+        position: relative;
+        text-align: center;
+        /* Arriba deja ver la flor; el contenido arranca debajo. */
+        padding: 3.75rem 1.25rem 0;
+        background-image:
+            radial-gradient(ellipse at 50% 45%, rgba(241, 236, 221, 0.9) 0%, rgba(251, 248, 240, 0) 70%),
+            linear-gradient(#fbf8f0, #fbf8f0);
+    }
+
+    .flor {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+    }
+
+    .flor-arriba {
+        top: 0;
+    }
+
+    .flor-abajo {
+        bottom: 0;
+        opacity: 0.9;
+    }
+
+    .contenido {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* La placa crema translúcida que va detrás de cada bloque. */
+    .placa {
+        border-radius: 1rem;
+        background: rgba(251, 248, 240, 0.8);
+        border: 1px solid rgba(195, 213, 182, 0.45);
+        box-shadow: 0 1px 3px rgba(47, 69, 54, 0.06);
+    }
+
+    .encabezado {
+        margin-top: 0.4rem;
+        padding: 0.6rem 1.6rem 0.7rem;
+    }
+
+    .antes {
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.2rem;
+        line-height: 1;
+        color: var(--color-segundo);
+    }
+
+    .titulo-despedida {
+        margin-top: 0.7rem;
+        font-family: var(--font-titulo);
+        font-weight: 400;
+        font-size: 2.5rem;
+        line-height: 1.1;
+        color: var(--color-oro-oscuro);
+    }
+
+    .divisor {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 20rem;
+        margin-top: 1rem;
+        color: var(--color-segundo);
+    }
+
+    .divisor svg {
+        width: 1rem;
+        flex: none;
+    }
+
+    .linea {
+        flex: 1;
+        height: 1px;
+    }
+
+    .linea-izq {
+        background: linear-gradient(to right, transparent, #c3d5b6);
+    }
+
+    .linea-der {
+        background: linear-gradient(to left, transparent, #c3d5b6);
+    }
+
+    .mensaje {
+        width: 100%;
+        margin-top: 1.2rem;
+        padding: 1rem 1.25rem 1.1rem;
+        font-family: var(--font-texto);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: color-mix(in srgb, var(--color-primero) 75%, transparent);
+    }
+
+    .destacado {
+        margin-top: 0.6rem;
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.15rem;
+        line-height: 1.4;
+        color: var(--color-segundo);
+    }
+
+    /* El sello dorado del sobre, como firma; respira despacio. */
+    .sello {
+        width: 5.5rem;
+        height: auto;
+        margin-top: 1.6rem;
+        filter: drop-shadow(0 6px 10px rgba(140, 111, 63, 0.35));
+        animation: respirar-sello 3.5s ease-in-out infinite;
+    }
+
+    @keyframes respirar-sello {
+        0%, 100% { scale: 1; }
+        50% { scale: 1.05; }
+    }
+
+    .nombres {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1rem;
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 2.6rem;
+        line-height: 1.15;
+        color: var(--color-primero);
+    }
+
+    .nombres .y {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--color-oro);
+    }
+
+    .fecha {
+        margin-top: 0.9rem;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: color-mix(in srgb, var(--color-primero) 75%, transparent);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sello {
+            animation: none;
+        }
+    }
+</style>

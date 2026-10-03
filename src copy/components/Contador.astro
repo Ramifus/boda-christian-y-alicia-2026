@@ -1,0 +1,271 @@
+---
+// src/components/Contador.astro
+// "Reserva la fecha": la cuenta regresiva hasta la ceremonia y, debajo, el
+// pasaje de 1 Corintios. Flores arriba y abajo, como la página de nombres.
+// La fecha sale de datos.ts (fechaISO), con la hora de Bolivia.
+import { fechaISO, fechaConHora, versiculo } from "../datos";
+
+const casillas = [
+    { clave: "dias", nombre: "Días" },
+    { clave: "horas", nombre: "Horas" },
+    { clave: "minutos", nombre: "Minutos" },
+    { clave: "segundos", nombre: "Segundos" },
+];
+---
+
+<section id="cuenta-regresiva" class="contador">
+    <img src="/imagenes/florarriba.webp" alt="" aria-hidden="true" width="828" height="276" class="flor flor-arriba" />
+    <img src="/imagenes/florabajo.webp" alt="" aria-hidden="true" width="828" height="294" class="flor flor-abajo" />
+
+    <div class="contenido">
+        <header class="placa encabezado revelar">
+            <p class="antes">Reserva la fecha</p>
+            <h2 class="titulo-contador">Cuenta Regresiva</h2>
+        </header>
+
+        <div class="divisor revelar" aria-hidden="true">
+            <span class="linea linea-izq"></span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+                <path d="M8 2.5 L11 8 L8 13.5 L5 8 Z"></path>
+                <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"></circle>
+            </svg>
+            <span class="linea linea-der"></span>
+        </div>
+
+        <p class="placa fecha revelar">{fechaConHora}</p>
+
+        <div id="contador" data-fecha={fechaISO} class="casillas revelar">
+            {
+                casillas.map((c) => (
+                    <div class="casilla">
+                        <span class="numero" data-parte={c.clave}>00</span>
+                        <span class="nombre">{c.nombre}</span>
+                    </div>
+                ))
+            }
+        </div>
+        <p id="contador-final" class="placa fecha hidden">¡Hoy es el gran día!</p>
+
+        <p class="acompanes revelar">Nos encantaría que nos acompañes</p>
+
+        <blockquote class="placa versiculo revelar">
+            {versiculo.parrafos.map((p) => <p>{p}</p>)}
+            <p class="cierre">{versiculo.cierre}</p>
+            <footer class="cita">{versiculo.cita}</footer>
+        </blockquote>
+    </div>
+</section>
+
+<style>
+    .contador {
+        position: relative;
+        text-align: center;
+        /* Arriba deja ver la flor; el contenido arranca debajo. */
+        padding: 3.75rem 1.25rem 0;
+        background-image:
+            radial-gradient(ellipse at 50% 45%, rgba(241, 236, 221, 0.9) 0%, rgba(251, 248, 240, 0) 70%),
+            linear-gradient(#fbf8f0, #fbf8f0);
+    }
+
+    .flor {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+    }
+
+    .flor-arriba {
+        top: 0;
+    }
+
+    .flor-abajo {
+        bottom: 0;
+        opacity: 0.9;
+    }
+
+    .contenido {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* La placa crema translúcida que va detrás de cada bloque de texto. */
+    .placa {
+        border-radius: 1rem;
+        background: rgba(251, 248, 240, 0.8);
+        border: 1px solid rgba(195, 213, 182, 0.45);
+        box-shadow: 0 1px 3px rgba(47, 69, 54, 0.06);
+    }
+
+    .encabezado {
+        margin-top: 0.4rem;
+        padding: 0.6rem 1.6rem 0.7rem;
+    }
+
+    .antes {
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.25rem;
+        line-height: 1;
+        color: var(--color-segundo);
+    }
+
+    .titulo-contador {
+        margin-top: 0.75rem;
+        font-family: var(--font-titulo);
+        font-weight: 400;
+        font-size: 2.25rem;
+        line-height: 1.1;
+        color: var(--color-oro-oscuro);
+    }
+
+    .divisor {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 20rem;
+        margin-top: 1rem;
+        color: var(--color-segundo);
+    }
+
+    .divisor svg {
+        width: 1rem;
+        flex: none;
+    }
+
+    .linea {
+        flex: 1;
+        height: 1px;
+    }
+
+    .linea-izq {
+        background: linear-gradient(to right, transparent, #c3d5b6);
+    }
+
+    .linea-der {
+        background: linear-gradient(to left, transparent, #c3d5b6);
+    }
+
+    .fecha {
+        margin-top: 0.75rem;
+        padding: 0.65rem 1.25rem;
+        font-family: var(--font-texto);
+        font-size: 1rem;
+        line-height: 1.6;
+        text-transform: uppercase;
+        color: color-mix(in srgb, var(--color-primero) 75%, transparent);
+    }
+
+    /* ── Las cuatro casillas ──────────────────────────────── */
+    .casillas {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.4rem;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .casilla {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 0.1rem 0.85rem;
+        border-radius: 1rem;
+        background: rgba(251, 248, 240, 0.85);
+        border: 1px solid rgba(195, 213, 182, 0.6);
+        box-shadow: 0 1px 3px rgba(47, 69, 54, 0.06);
+    }
+
+    .numero {
+        font-family: "Tangerine", cursive;
+        font-size: 1.875rem;
+        line-height: 1;
+        color: var(--color-primero);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .nombre {
+        margin-top: 0.625rem;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.5625rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--color-segundo);
+    }
+
+    .acompanes {
+        margin-top: 2rem;
+        max-width: 22rem;
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.5rem;
+        line-height: 1.35;
+        color: var(--color-segundo);
+    }
+
+    /* ── El versículo ─────────────────────────────────────── */
+    .versiculo {
+        width: 100%;
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem 1.1rem;
+        font-family: var(--font-texto);
+        font-size: 0.875rem;
+        line-height: 1.65;
+        color: color-mix(in srgb, var(--color-primero) 75%, transparent);
+    }
+
+    .versiculo p + p {
+        margin-top: 0.5rem;
+    }
+
+    .cierre {
+        margin-top: 0.75rem !important;
+        font-family: var(--font-titulo);
+        font-size: 1.25rem;
+        line-height: 1.2;
+        color: var(--color-oro-oscuro);
+    }
+
+    .cita {
+        margin-top: 0.5rem;
+        font-weight: 700;
+        font-size: 0.6875rem;
+        letter-spacing: 0.2em;
+        color: var(--color-segundo);
+    }
+</style>
+
+<script>
+    const caja = document.getElementById("contador");
+    const destino = new Date(caja?.dataset.fecha ?? "").getTime();
+    const partes = {
+        dias: caja?.querySelector('[data-parte="dias"]'),
+        horas: caja?.querySelector('[data-parte="horas"]'),
+        minutos: caja?.querySelector('[data-parte="minutos"]'),
+        segundos: caja?.querySelector('[data-parte="segundos"]'),
+    };
+    const dos = (n: number) => String(n).padStart(2, "0");
+
+    function actualizar() {
+        const falta = destino - Date.now();
+        if (falta <= 0) {
+            caja?.classList.add("hidden");
+            document.getElementById("contador-final")?.classList.remove("hidden");
+            clearInterval(reloj);
+            return;
+        }
+        const s = Math.floor(falta / 1000);
+        partes.dias!.textContent = String(Math.floor(s / 86400));
+        partes.horas!.textContent = dos(Math.floor((s % 86400) / 3600));
+        partes.minutos!.textContent = dos(Math.floor((s % 3600) / 60));
+        partes.segundos!.textContent = dos(s % 60);
+    }
+
+    const reloj = setInterval(actualizar, 1000);
+    actualizar();
+</script>

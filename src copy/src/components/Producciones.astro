@@ -1,0 +1,254 @@
+---
+// src/components/Producciones.astro
+// "Producciones y servicios": quienes hacen posible la fiesta (sonido,
+// producción, decoración, seguridad...). Página clara, como las de la
+// ceremonia: flores arriba y abajo y una tarjeta crema por empresa, con su
+// rubro arriba (si tiene) y el logo en un cuadro con doble filete dorado
+// (el nombre queda en el texto alternativo: el logo ya lo dice). Cada logo tiene un destello de luz que lo cruza de vez en
+// cuando, cada uno a su tiempo.
+// Las empresas salen de `producciones` en datos.ts.
+import { producciones } from "../datos";
+---
+
+<section id="producciones" class="producciones">
+    <img src="/imagenes/florarriba.webp" alt="" aria-hidden="true" width="828" height="276" class="flor flor-arriba" />
+
+    <div class="contenido">
+        <header class="placa encabezado revelar">
+            <p class="antes">Con el apoyo de</p>
+            <h2 class="titulo-producciones">Producciones y Servicios</h2>
+        </header>
+
+        <div class="divisor revelar" aria-hidden="true">
+            <span class="linea linea-izq"></span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+                <path d="M8 2.5 L11 8 L8 13.5 L5 8 Z"></path>
+                <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"></circle>
+            </svg>
+            <span class="linea linea-der"></span>
+        </div>
+
+        <p class="lema revelar">Hacen posible esta fiesta</p>
+
+        <ul class="grilla">
+            {
+                producciones.map((p, i) => (
+                    <li class="placa tarjeta revelar" style={`--orden:${i}`}>
+                        {p.rubro && <p class="rubro">{p.rubro}</p>}
+                        <div class="logo">
+                            <img src={p.imagen} alt={p.nombre} loading="lazy" width="480" height="480" />
+                            <span class="destello" aria-hidden="true" />
+                        </div>
+                    </li>
+                ))
+            }
+        </ul>
+
+        <p class="gracias revelar">¡Gracias por ser parte de nuestro gran día!</p>
+    </div>
+
+    <!-- Al final del contenido (no pegada a la pantalla): la página es más
+         larga que el celular y se baja con el dedo. -->
+    <img src="/imagenes/florabajo.webp" alt="" aria-hidden="true" width="828" height="294" class="flor flor-abajo" />
+</section>
+
+<style>
+    .producciones {
+        position: relative;
+        text-align: center;
+        /* Arriba deja ver la flor; el contenido arranca debajo. */
+        padding: 3.75rem 1.1rem 0;
+        background-image:
+            radial-gradient(ellipse at 50% 45%, rgba(241, 236, 221, 0.9) 0%, rgba(251, 248, 240, 0) 70%),
+            linear-gradient(#fbf8f0, #fbf8f0);
+    }
+
+    .flor {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+    }
+
+    .flor-arriba {
+        top: 0;
+    }
+
+    .flor-abajo {
+        position: relative;
+        display: block;
+        width: calc(100% + 2.2rem);
+        margin: 0.5rem -1.1rem -6rem;
+        opacity: 0.9;
+    }
+
+    .contenido {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* La placa crema translúcida que va detrás de cada bloque. */
+    .placa {
+        border-radius: 1rem;
+        background: rgba(251, 248, 240, 0.85);
+        border: 1px solid rgba(195, 213, 182, 0.5);
+        box-shadow: 0 1px 3px rgba(47, 69, 54, 0.06);
+    }
+
+    .encabezado {
+        margin-top: 0.4rem;
+        padding: 0.6rem 1.6rem 0.7rem;
+    }
+
+    .antes {
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.2rem;
+        line-height: 1;
+        color: var(--color-segundo);
+    }
+
+    .titulo-producciones {
+        margin-top: 0.7rem;
+        font-family: var(--font-titulo);
+        font-weight: 400;
+        font-size: 2.15rem;
+        line-height: 1.1;
+        color: var(--color-oro-oscuro);
+    }
+
+    .divisor {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 20rem;
+        margin-top: 1rem;
+        color: var(--color-segundo);
+    }
+
+    .divisor svg {
+        width: 1rem;
+        flex: none;
+    }
+
+    .linea {
+        flex: 1;
+        height: 1px;
+    }
+
+    .linea-izq {
+        background: linear-gradient(to right, transparent, #c3d5b6);
+    }
+
+    .linea-der {
+        background: linear-gradient(to left, transparent, #c3d5b6);
+    }
+
+    .lema {
+        margin-top: 0.9rem;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.68rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--color-segundo);
+    }
+
+    /* ── Las tarjetas ─────────────────────────────────────── */
+    .grilla {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        width: 100%;
+        margin-top: 1.4rem;
+    }
+
+    /* Si queda una sola en la última fila, va centrada. */
+    .tarjeta:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: calc(50% - 0.4rem);
+    }
+
+    .tarjeta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Sin rubro (Trebmil), el logo queda centrado en el alto. */
+        justify-content: center;
+        padding: 0.85rem 0.75rem;
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 22px -16px rgba(47, 69, 54, 0.45);
+    }
+
+    .rubro {
+        min-height: 2.2em;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.45rem;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.58rem;
+        line-height: 1.3;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--color-oro-oscuro);
+    }
+
+    /* El logo, en un cuadro con doble filete dorado. */
+    .logo {
+        position: relative;
+        width: 82%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        border-radius: 1rem;
+        box-shadow:
+            0 0 0 2px #fbf8f0,
+            0 0 0 3px rgba(191, 160, 106, 0.7),
+            0 8px 16px -8px rgba(47, 69, 54, 0.5);
+    }
+
+    .logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* El destello de luz que cruza el logo, cada uno a su tiempo. */
+    .destello {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+        transform: translateX(-120%);
+        animation: destellar 5.5s ease-in-out infinite;
+        animation-delay: calc(var(--orden) * 0.7s);
+    }
+
+    @keyframes destellar {
+        0%, 70% { transform: translateX(-120%); }
+        100% { transform: translateX(120%); }
+    }
+
+    .gracias {
+        margin-top: 1.6rem;
+        max-width: 20rem;
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.3rem;
+        line-height: 1.4;
+        color: var(--color-segundo);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .destello {
+            animation: none;
+            display: none;
+        }
+    }
+</style>

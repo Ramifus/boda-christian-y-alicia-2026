@@ -1,0 +1,24 @@
+---
+// src/components/Separador.astro
+// Filete dorado con un rombo y dos hojitas al centro. Va entre el título
+// y el contenido de cada sección.
+export interface Props {
+    class?: string;
+}
+const { class: clase = "" } = Astro.props;
+---
+
+<svg
+    class={`separador mx-auto block w-44 ${clase}`}
+    viewBox="0 0 200 24"
+    fill="none"
+    aria-hidden="true"
+>
+    <path d="M4 12 H78" stroke="#bfa06a" stroke-width="1" stroke-linecap="round" />
+    <path d="M122 12 H196" stroke="#bfa06a" stroke-width="1" stroke-linecap="round" />
+    <path d="M100 4 L106 12 L100 20 L94 12 Z" fill="#bfa06a" />
+    <path d="M90 12 C86 6 80 5 76 7 C80 11 85 13 90 12 Z" fill="#7fa178" />
+    <path d="M110 12 C114 6 120 5 124 7 C120 11 115 13 110 12 Z" fill="#7fa178" />
+    <circle cx="4" cy="12" r="1.6" fill="#bfa06a" />
+    <circle cx="196" cy="12" r="1.6" fill="#bfa06a" />
+</svg>

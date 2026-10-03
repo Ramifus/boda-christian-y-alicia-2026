@@ -1,0 +1,330 @@
+---
+// src/components/Sobre.astro
+// La entrada: una tarjeta cerrada en dos puertas, con el sello dorado al
+// centro. Al tocar el sello cada puerta se va a su lado (la izquierda a la
+// izquierda, la derecha a la derecha) y aparece la invitación debajo.
+//
+// Las dos puertas llevan el mismo dibujo completo; cada una muestra solo
+// su mitad, así el corte del medio parte el diseño como un papel doblado.
+//
+// Ese toque es además el único momento en que el navegador deja sonar la
+// música, por eso la melodía arranca acá. Al abrirse avisa con el evento
+// "invitacion-abierta" (en window), que escucha la portada.
+import { novios, fechaLarga } from "../datos";
+---
+
+<div id="sobre-portada" class="sobre-portada" role="dialog" aria-label="Abrir la invitación">
+    {
+        ["izquierda", "derecha"].map((lado) => (
+            <div class={`puerta puerta-${lado}`} aria-hidden={lado === "derecha" ? "true" : undefined}>
+                <div class="lienzo">
+                    <div class="pliegue" />
+
+                    <img src="/imagenes/floresquina.webp" alt="" class="flor flor-arriba-izq" width="384" height="351" />
+                    <img src="/imagenes/floresquina.webp" alt="" class="flor flor-arriba-der" width="384" height="351" />
+                    <img src="/imagenes/floresquina.webp" alt="" class="flor flor-abajo-izq" width="384" height="351" />
+                    <img src="/imagenes/floresquina.webp" alt="" class="flor flor-abajo-der" width="384" height="351" />
+
+                    <p class="invitado">¡Estás Invitado!</p>
+
+                    <p class="monograma" aria-label={`${novios.el} y ${novios.ella}`}>
+                        <span class="letra-1">{novios.iniciales[0]}</span>
+                        <span class="letra-2">{novios.iniciales[1]}</span>
+                    </p>
+
+                    <p class="fecha">{fechaLarga}</p>
+
+                    <p class="indicacion">Toca el sello para abrir</p>
+                </div>
+            </div>
+        ))
+    }
+
+    <button id="sello" type="button" class="sello" aria-label="Tocar el sello para abrir la invitación">
+        <img src="/imagenes/boton.webp" alt="" width="320" height="318" />
+    </button>
+</div>
+
+<style>
+    .sobre-portada {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        width: 100%;
+        max-width: 430px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .sobre-portada.abierto {
+        visibility: hidden;
+        pointer-events: none;
+        transition: visibility 0s linear 1.2s;
+    }
+
+    /* ── Las puertas ──────────────────────────────────────── */
+    .puerta {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        overflow: hidden;
+        transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .puerta-izquierda {
+        left: 0;
+    }
+
+    .puerta-derecha {
+        right: 0;
+    }
+
+    /* La sombra del doblez, sobre el borde del medio de cada puerta. */
+    .puerta::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 14px;
+        pointer-events: none;
+    }
+
+    .puerta-izquierda::after {
+        right: 0;
+        background: linear-gradient(to left, rgba(47, 69, 54, 0.14), transparent);
+    }
+
+    .puerta-derecha::after {
+        left: 0;
+        background: linear-gradient(to right, rgba(47, 69, 54, 0.1), transparent);
+    }
+
+    .sobre-portada.abierto .puerta-izquierda {
+        transform: translateX(-102%);
+    }
+
+    .sobre-portada.abierto .puerta-derecha {
+        transform: translateX(102%);
+    }
+
+    /* El dibujo completo, del ancho de la tarjeta entera. */
+    .lienzo {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 200%;
+        background-image: linear-gradient(#faf7ef, #faf7ef);
+    }
+
+    .puerta-izquierda .lienzo {
+        left: 0;
+    }
+
+    .puerta-derecha .lienzo {
+        right: 0;
+    }
+
+    /* La solapa en V de abajo: lo de afuera de la V, apenas más oscuro. */
+    .pliegue {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(#f3eee1, #f3eee1);
+        clip-path: polygon(0 56%, 50% 85%, 100% 56%, 100% 100%, 0 100%);
+    }
+
+    /* La línea del doblez: una franja fina siguiendo la V. */
+    .pliegue::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(#e2d7bd, #e2d7bd);
+        clip-path: polygon(0 56%, 50% 85%, 100% 56%, 100% calc(56% + 1.5px), 50% calc(85% + 1.5px), 0 calc(56% + 1.5px));
+    }
+
+    /* ── Las flores de las esquinas ──────────────────────── */
+    .flor {
+        position: absolute;
+        width: 46%;
+        height: auto;
+        pointer-events: none;
+    }
+
+    .flor-arriba-izq {
+        top: 0;
+        left: 0;
+    }
+
+    .flor-arriba-der {
+        top: 0;
+        right: 0;
+        transform: scaleX(-1);
+    }
+
+    .flor-abajo-izq,
+    .flor-abajo-der {
+        bottom: 0;
+        opacity: 0.55;
+    }
+
+    .flor-abajo-izq {
+        left: 0;
+        transform: scaleY(-1);
+    }
+
+    .flor-abajo-der {
+        right: 0;
+        transform: scale(-1, -1);
+    }
+
+    /* ── Los textos ───────────────────────────────────────── */
+    .invitado,
+    .monograma,
+    .fecha,
+    .indicacion {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+    }
+
+    .invitado {
+        top: 24%;
+        font-family: var(--font-nombre);
+        font-style: italic;
+        font-size: 1.9rem;
+        line-height: 1;
+        color: var(--color-segundo);
+    }
+
+    .monograma {
+        top: 31%;
+        height: 6.6rem;
+        font-family: var(--font-iniciales);
+        font-size: 5.6rem;
+        line-height: 1;
+    }
+
+    /* Dorado degradado, como el del sello. */
+    .monograma span {
+        position: absolute;
+        background: linear-gradient(160deg, #e6d0a0 0%, #bfa06a 45%, #8c6f3f 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    /* La primera letra arriba a la izquierda, la segunda encimada abajo. */
+    .letra-1 {
+        left: calc(50% - 3.1rem);
+        top: 0;
+    }
+
+    .letra-2 {
+        left: calc(50% - 0.6rem);
+        top: 1.15rem;
+    }
+
+    .fecha {
+        top: 48%;
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: color-mix(in srgb, var(--color-primero) 75%, transparent);
+    }
+
+    .indicacion {
+        top: calc(65% + 4.6rem);
+        font-family: var(--font-texto);
+        font-weight: 700;
+        font-size: 0.66rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--color-primero);
+    }
+
+    /* ── El sello ─────────────────────────────────────────── */
+    .sello {
+        position: absolute;
+        z-index: 2;
+        top: 65%;
+        left: 50%;
+        width: 6.5rem;
+        height: 6.5rem;
+        margin: -3.25rem 0 0 -3.25rem;
+        border-radius: 50%;
+        cursor: pointer;
+        animation: respirar 3s ease-in-out infinite;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .sello img {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 6px 10px rgba(140, 111, 63, 0.35));
+    }
+
+    /* El aro verde fino alrededor del sello. */
+    .sello::before {
+        content: "";
+        position: absolute;
+        inset: -0.75rem;
+        border-radius: 50%;
+        border: 1.5px solid var(--color-segundo);
+    }
+
+    .sobre-portada.abierto .sello {
+        animation: none;
+        transform: scale(1.25);
+        opacity: 0;
+    }
+
+    @keyframes respirar {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.04); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sello { animation: none; }
+        .puerta { transition-duration: 0.4s; }
+    }
+</style>
+
+<script>
+    const portada = document.getElementById("sobre-portada");
+    const sello = document.getElementById("sello");
+
+    // Mientras la tarjeta está cerrada, la invitación de abajo no se mueve.
+    document.documentElement.style.overflow = "hidden";
+
+    let abierto = false;
+
+    sello?.addEventListener("click", () => {
+        if (abierto) return;
+        abierto = true;
+
+        /*
+           La melodía arranca con este toque: los navegadores solo dejan
+           sonar un audio si lo pide un gesto del invitado. Queda en
+           window.audioGlobal para que el botón de música la maneje.
+        */
+        const ventana = window as any;
+        const melodia: HTMLAudioElement = ventana.audioGlobal ?? new Audio("/musica/melodia2.mp3");
+        melodia.loop = true;
+        melodia.volume = 0.65;
+        ventana.audioGlobal = melodia;
+        melodia.play().catch(() => {});
+        window.dispatchEvent(new Event("musica-lista"));
+
+        window.scrollTo(0, 0);
+        portada?.classList.add("abierto");
+
+        // La portada entra mientras las puertas terminan de correrse.
+        setTimeout(() => window.dispatchEvent(new Event("invitacion-abierta")), 500);
+        setTimeout(() => {
+            document.documentElement.style.overflow = "";
+        }, 1200);
+    });
+</script>

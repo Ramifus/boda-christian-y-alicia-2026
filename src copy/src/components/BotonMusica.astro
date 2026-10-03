@@ -1,0 +1,90 @@
+---
+// src/components/BotonMusica.astro
+// Botón flotante abajo a la izquierda, como en el modelo: barritas que bailan mientras suena la
+// melodía, y quietas en pausa. Maneja el mismo audio que arranca el sobre
+// (window.audioGlobal). Aparece recién cuando ese audio existe.
+---
+
+<button id="boton-musica" type="button" class="boton-musica oculto" aria-label="Pausar la música">
+    <span class="barra"></span>
+    <span class="barra"></span>
+    <span class="barra"></span>
+    <span class="barra"></span>
+</button>
+
+<style>
+    .boton-musica {
+        position: fixed;
+        bottom: 1.1rem;
+        left: max(1rem, calc(50% - 215px + 1rem));
+        z-index: 40;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        background: var(--color-segundo);
+        box-shadow:
+            0 0 0 3px rgba(251, 248, 240, 0.9),
+            0 8px 18px -8px rgba(47, 69, 54, 0.7);
+        transition: opacity 0.4s;
+    }
+
+    .boton-musica.oculto {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .barra {
+        width: 3px;
+        height: 1rem;
+        border-radius: 2px;
+        background: #e6d0a0;
+        transform-origin: bottom;
+        transform: scaleY(0.3);
+        animation: ecualizar 1s ease-in-out infinite;
+        animation-play-state: paused;
+    }
+
+    .barra:nth-child(2) { animation-delay: -0.3s; }
+    .barra:nth-child(3) { animation-delay: -0.6s; }
+    .barra:nth-child(4) { animation-delay: -0.15s; }
+
+    .boton-musica.sonando .barra {
+        animation-play-state: running;
+    }
+
+    @keyframes ecualizar {
+        0%, 100% { transform: scaleY(0.3); }
+        50% { transform: scaleY(1); }
+    }
+</style>
+
+<script>
+    const boton = document.getElementById("boton-musica");
+    const audio = () => (window as any).audioGlobal as HTMLAudioElement | undefined;
+
+    function pintar() {
+        const sonando = !audio()?.paused;
+        boton?.classList.toggle("sonando", sonando);
+        boton?.setAttribute("aria-label", sonando ? "Pausar la música" : "Reanudar la música");
+    }
+
+    window.addEventListener("musica-lista", () => {
+        const a = audio();
+        if (!a) return;
+        boton?.classList.remove("oculto");
+        a.addEventListener("play", pintar);
+        a.addEventListener("pause", pintar);
+        pintar();
+    });
+
+    boton?.addEventListener("click", () => {
+        const a = audio();
+        if (!a) return;
+        if (a.paused) a.play().catch(() => {});
+        else a.pause();
+    });
+</script>
